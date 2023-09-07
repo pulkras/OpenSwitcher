@@ -1,0 +1,15 @@
+Request:
+    Debian:
+    1) sudo apt-get install build-essential
+    2) sudo apt install libx11-dev libxkbcommon-x11-dev
+    3) sudo apt install libxkbcommon-dev
+    4) sudo apt install libicu-dev
+    Docs generating:
+    1) sudo apt install doxygen
+
+Compiling:
+    1) make
+Run:
+    1) myproject&
+
+Dont forgot kill myproject

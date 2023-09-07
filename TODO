@@ -1,0 +1,3 @@
+1. Create function for transforming utf8 -> keysym
+3. Create function that delete selected text of current focused window (may be realese through sending events BAKSPACE)
+2. Create function that print keycodes events
