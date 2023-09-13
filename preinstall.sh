@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Requested packages 
-required_packages=("build-essential" "xserver-xorg" "libx11-dev" "x11-utils" "libxkbcommon-x11-dev" "libxkbcommon-dev" "libicu-dev")
+required_packages=("build-essential" "xserver-xorg" "xbindkeys" "libx11-dev" "x11-utils" "libxkbcommon-x11-dev" "libxkbcommon-dev" "libicu-dev")
 
 # Requested files, can be configured yourself
 required_files=("$HOME/.xbindkeysrc" "$HOME/.xinitrc")
