@@ -9,7 +9,8 @@ Request:
     1) sudo apt install doxygen
 
 Compiling:
-    1) make
+    1) chmod +x ./preinstall.sh
+    2) make
 Run:
     1) myproject&
 
