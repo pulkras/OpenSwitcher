@@ -1,242 +1,265 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
 
+#include <fcntl.h>
+#include <errno.h>
+
 #include <X11/Xlib.h>
-#include <X11/Xutil.h>
+#include <X11/extensions/XTest.h>
 #include <X11/X.h>
 #include <X11/Xatom.h>
-#include <X11/keysymdef.h>
+#include <X11/keysym.h>
+
+#include <X11/XKBlib.h>
+
+// #include <xkbcommon/xkbcommon-keysyms.h>
+#include <xkbcommon/xkbcommon.h>
+#include <xkbcommon/xkbcommon-x11.h>
+
+// #include <xcb/xcb.h>
+
+#include <unicode/ustring.h>
+#include <unicode/ucnv.h>
+#include <unicode/ustdio.h>
+#include <unicode/utf8.h>
+
+#include <libinput.h>
+
+#include <libevdev/libevdev.h>
+#include <libevdev/libevdev-uinput.h>
+
+#include <linux/input-event-codes.h>
+#include <linux/input.h>
+#include <linux/keyboard.h>
 
 
-#define CONTROL_L XKeysymToKeycode(display, XK_Control_L)
-#define SHIFT_L   XKeysymToKeycode(display, XK_Shift_L)
+uint8_t *get_input_text();
+KeySym *transform_stdin_to_KeySyms(uint8_t *text);
+int send_KeySym(KeySym KeySym);
+int send_key(int fd, struct input_event *ev, int value, KeyCode keycode);
+int create_event(struct input_event *ev, int type, int code, int value);
+int write_event(int fd, const struct input_event *ev);
 
 
-static bool isRun = true;
 
-int run();
-void check_combination(Display *display, Window *focus, XEvent *event, KeyCode *combination, size_t size);
-void process_selected_text(Display *display, Window *focus, XEvent *event);
-unsigned char *getSelectedText(Display *display, Window *focus, unsigned long *size);
-unsigned char *getPropertyText(Display *display, Window window, Atom p, unsigned long *sizestr);
-
-void charToString(char c, char* str) {
-    str[0] = c;
-    str[1] = '\0';
-}
 
 int main() {
     
-    int state = run();
+    // uint8_t *text = get_input_text();
+    uint8_t *text = "Текст";
+    KeySym *arr = transform_stdin_to_KeySyms(text);
     
-    return state;
-}
+    int32_t length = strlen((const char *)text);
 
-// Запуск приложения
-int run()
-{
-    Display *display = NULL;
-    Window focus = None;
-    XEvent event;
-    int revert_to;
-    
-    // Подключение к серверу X
-    display = XOpenDisplay(NULL);
-    if (display == NULL) {
-        fprintf(stderr, "Невозможно подключиться к серверу X\n");
-        XCloseDisplay(display);
-        return 1;
-    }
-    
-    // Определение фокусного окна
-    if(!XGetInputFocus(display, &focus, &revert_to) || focus == None) {
-        fprintf(stderr, "Ошибка при получении фокусного окна\n");
-        XCloseDisplay(display);
-        return 1;
-    }
-
-    // Комбинация клавиш
-    KeyCode combination[] = 
+    if (length <= 0)
     {
-        CONTROL_L,
-        SHIFT_L
-    };
-    size_t sizeCombination = sizeof(combination)/sizeof(KeyCode);
-    
-    // Маска событий, которые будут отлавливаться
-    XSelectInput(display, focus, KeyPressMask);
-    
-    // Запуск цикла обработки событий
-    while (isRun) {
-        XNextEvent(display, &event);
-
-        if (event.type == KeyPress)
-        check_combination(display, &focus, &event, combination, sizeCombination);
-        
+        return -1;
     }
     
-    // Закрытие соединения с сервером X
-    XCloseDisplay(display);
+
+    printf("length: %d\n", 5);
+
+    // send_KeySym(XK_A);
+
+    
+
+    for (int i = 0; i < length; i++)
+    {
+        send_KeySym(arr[i]);
+    }
+    
     return 0;
 }
 
-// Проверяет комбинацию клавиш
-void check_combination(Display *display, Window *focus, XEvent *event, KeyCode *combination, size_t size)
-{  
-    for (size_t i = 0; i < size; i++)
-    {
-        KeyCode key = combination[i];
-
-        if (event->xkey.keycode != key)
-        return;
-
-        XNextEvent(display, event);      
+uint8_t *get_input_text()
+{
+    if (stdin == NULL) {
+        perror("Ошибка при открытии stdin");
     }
 
-    // Обработка комбинации
-    process_selected_text(display, focus, event);
-    printf("Нажата комбинация клавиш Ctrl+Shift\n");
-}
+    // Получение размера входного потока
+    fseek(stdin, 0, SEEK_END);
+    size_t size = ftell(stdin);
+    rewind(stdin);
 
-void process_selected_text(Display *display, Window *focus, XEvent *event)
-{
-    unsigned long size;
-    unsigned char *text = getSelectedText(display, focus, &size);
-    printf("%s\n", text);
-
-    for (unsigned long i = 0; i < size; i++)
-    {
-        char c = text[i];
-        char str[2];
-        charToString(c, str);
-        KeySym keysym = XStringToKeysym(str);
-        printf("Keysym: %lx char: %c\n", keysym, c);
+    uint8_t *text = malloc(sizeof(uint8_t)*size + 1);
+    if (text == NULL) {
+        perror("Ошибка при выделении памяти");
     }
-    
-    
+
+    // Чтение всего текста
+    size_t bytesRead = fread(text, sizeof(uint8_t), size, stdin);
+    if (bytesRead != size) {
+        perror("Произошла ошибка при чтении stdin");
+    }
+
+    text[size+1] = '\0';
+
+    printf("Весь текст: %s\n", text);
+
+    return text;
 }
 
-unsigned char *getSelectedText(Display *display, Window *focus, unsigned long *size)
+KeySym *transform_stdin_to_KeySyms(uint8_t *text)
 {
-    Atom selection_primary = XInternAtom(display, "PRIMARY", true);
-    Atom utf8 = XInternAtom(display, "UTF8_STRING", true);
+    int32_t length = strlen((const char *)text);
+    int32_t index = 0;
 
-    if (selection_primary == None)
-    printf("Атом %s пуст или его не существует\n", XGetAtomName(display, selection_primary));
-    if (utf8 == None)
-    printf("Атом %s пуст или его не существует\n", XGetAtomName(display, utf8));
+    KeySym *arr = (KeySym *)malloc(sizeof(KeySym)*length);
 
-    /* The selection owner will store the data in a property on this
-     * window: */
-    Window target_window = XCreateSimpleWindow(display, DefaultRootWindow(display), -10, -10, 1, 1, 0, 0, 0);
+    UChar32 codepoint;
+    U8_NEXT(text, index, length, codepoint);
+
+    while (codepoint > 0) {
+        // printf("index: %d Символ: %c U+%04X\n", index-1, text[index-1], codepoint);
+
+        xkb_keysym_t keysym = xkb_utf32_to_keysym((uint64_t)codepoint);
+
+
+        char buffer[100];
+        xkb_keysym_get_name(keysym, buffer, 100);
+
+        char* codestr = (char*)malloc(sizeof(char)*8);
+        snprintf(codestr, 15, "U+%04X", codepoint);
+        // printf("codepoint: %s ", codestr);
+
+        printf("index: %d codepoint: %s name: %s \n", index-1, codestr, codestr);
+
+        // This is expected to be KeySym = xkb_keysym_t
+        arr[index-1] = (KeySym)keysym;
+        U8_NEXT(text, index, length, codepoint);
+    }
+
+    return arr;
+}
+
+int send_KeySym(KeySym keysym)
+{
+    Display* display = XOpenDisplay(NULL);
+    if (!display) {
+        fprintf(stderr, "Failed to open display\n");
+        return -1;
+    }
+
+    // printf("KeyCode: %d \n", XKeysymToKeycode(display, XK_A));
+
+    Window focus;
+    int revert;
+    XGetInputFocus(display, &focus, &revert);
+    if (focus == None) {
+        fprintf(stderr, "No owner for PRIMARY selection\n");
+        XCloseDisplay(display);
+        return -1;
+    }
+
+    KeyCode keycode = XKeysymToKeycode(display, keysym);
+
+    // eventX должен быть равен клавиатуре, чтобы найти клавиатуру воспользуйтесь sudo evtest
+    const char* inputDevice = "/dev/input/event0";
+    int fd = open(inputDevice, O_WRONLY);
+    if (fd == -1) {
+        printf("Ошибка при открытии устройства ввода\n");
+        return -1;
+    }
+
+    struct input_event ev;
+
+
+    XkbStateRec state;
+    XkbGetState(display, XkbUseCoreKbd, &state);
     
-    /* That's the property used by the owner. Note that it's completely
-     * arbitrary. */
-    Atom target_property = XInternAtom(display, "TEMP", False);
-
-    /* Request conversion to UTF-8. Not all owners will be able to
-     * fulfill that request. */
-    XConvertSelection(display, selection_primary, utf8, target_property, target_window,
-                      CurrentTime);
-
-    XEvent e;
-    while (isRun)
+    // если есть CapsLacks
+    if (state.locked_mods & LockMask)
     {
-        XNextEvent(display, &e);
-        switch (e.type)
+        if (xkb_keysym_to_upper(keysym) == keysym)
         {
-            case SelectionNotify:
-                if (e.xselection.property == None)
-                {
-                    printf("Conversion could not be performed.\n");
-                }
-                else
-                {
-                    return getPropertyText(display, target_window, target_property, size);
-                }
-                break;
+            // заглавная буква
+            send_key(fd, &ev, 1, keycode);
+            send_key(fd, &ev, 0, keycode);
+        } else
+        {
+            // строчная буква
+            send_key(fd, &ev, 1, XKeysymToKeycode(display, XK_Shift_L));
+            send_key(fd, &ev, 1, keycode);
+            send_key(fd, &ev, 0, XKeysymToKeycode(display, XK_Shift_L));
+            send_key(fd, &ev, 0, keycode);
+        }
+    } else
+    {
+        if (xkb_keysym_to_upper(keysym) == keysym)
+        {
+            // заглавная буква
+            send_key(fd, &ev, 1, XKeysymToKeycode(display, XK_Shift_L));
+            send_key(fd, &ev, 1, keycode);
+            send_key(fd, &ev, 0, XKeysymToKeycode(display, XK_Shift_L));
+            send_key(fd, &ev, 0, keycode);
+
+        } else
+        {
+            // строчная буква
+            send_key(fd, &ev, 1, keycode);
+            send_key(fd, &ev, 0, keycode);
         }
     }
-    return NULL;
-}
 
-unsigned char *getPropertyText(Display *display, Window window, Atom p, unsigned long *sizestr)
-{
-    Atom actual_type_return, incr;
-    int actual_format_return;
-    unsigned long size, bytes_after_return, nitems_return;
-    unsigned char *prop_return = NULL;
 
-    /* Dummy call to get type and size. */
-    XGetWindowProperty(display, window, p, 0, 0, False, AnyPropertyType,
-                       &actual_type_return, &actual_format_return, &bytes_after_return, &size, &prop_return);
-    XFree(prop_return);
     
+    
+     
+    close(fd);
 
-    incr = XInternAtom(display, "INCR", False);
-    if (actual_type_return == incr)
-    {
-        printf("Data too large and INCR mechanism not implemented\n");
-        return NULL;
-    }
-
-    /* Read the data in one go. */
-    // printf("Property size: %lu\n", size);
-
-    XGetWindowProperty(display, window, p, 0, size, False, AnyPropertyType,
-                       &actual_type_return, &actual_format_return, &nitems_return, &bytes_after_return, &prop_return);
-
-    // printf("%s\n", prop_return);
-    printf("actual_type_return: %s\n", XGetAtomName(display, actual_type_return));
-    printf("actual_format_return: %d\n", actual_format_return);
-    printf("nitems_return: %lu\n", nitems_return);
-    printf("bytes_after_return: %lu\n", bytes_after_return);
-    printf("size: %lu\n", size);
-
-    *sizestr = size;
-
-    // fflush(stdout);
-
-    /* Signal the selection owner that we have successfully read the
-     * data. */
-    XDeleteProperty(display, window, p);
-
-    return prop_return;
+    return 0;
 }
 
-void
-show_utf8_prop(Display *dpy, Window w, Atom p)
+int send_key(int fd, struct input_event *ev, int value, KeyCode keycode)
 {
-   
-    Atom da, incr, type;
-    int di;
-    unsigned long size, dul;
-    unsigned char *prop_ret = NULL;
-
-    /* Dummy call to get type and size. */
-    XGetWindowProperty(dpy, w, p, 0, 0, False, AnyPropertyType,
-                       &type, &di, &dul, &size, &prop_ret);
-    XFree(prop_ret);
-
-    incr = XInternAtom(dpy, "INCR", False);
-    if (type == incr)
+    // keycode от scancode отличается на 8
+    // нажатие клавиши
+    if (create_event(ev, EV_KEY, keycode-8, value))
     {
-        printf("Data too large and INCR mechanism not implemented\n");
-        return;
+        perror("Ошибка при создании эвента");
+        return -1;
+    }
+    
+    if (write_event(fd, ev))
+    {
+        perror("Ошибка при записи эвента");
+        return -1;
     }
 
-    /* Read the data in one go. */
-    printf("Property size: %lu\n", size);
+    if (create_event(ev, EV_SYN, SYN_REPORT, 0))
+    {
+        perror("Ошибка при создании эвента");
+        return -1;
+    }
+    
+    if (write_event(fd, ev))
+    {
+        perror("Ошибка при записи эвента");
+        return -1;
+    }
 
-    XGetWindowProperty(dpy, w, p, 0, size, False, AnyPropertyType,
-                       &da, &di, &dul, &dul, &prop_ret);
-    printf("%s", prop_ret);
-    fflush(stdout);
-    XFree(prop_ret);
 
-    /* Signal the selection owner that we have successfully read the
-     * data. */
-    XDeleteProperty(dpy, w, p);
+    return -1;
 }
+
+int write_event(int fd, const struct input_event *ev)
+{
+	int ret;
+	ret = write(fd, ev, sizeof(*ev));
+	return (ret == -1 || (size_t)ret < sizeof(*ev)) ? -1 : 0;
+}
+
+int create_event(struct input_event *ev, int type, int code, int value)
+{
+	ev->time.tv_sec = 0;
+	ev->time.tv_usec = 0;
+	ev->type = type;
+	ev->code = code;
+	ev->value = value;
+	return 0;
+}
+
