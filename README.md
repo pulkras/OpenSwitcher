@@ -26,3 +26,6 @@
   
 
 **Dont forgot kill myproject**
+
+
+сейчас выдели текст и используй команду xsel --primary -o | sudo ~/Programs/Project1/openswitcher чтобы текст был напечатан в командную строку
