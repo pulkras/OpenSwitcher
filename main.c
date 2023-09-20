@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
 #include <fcntl.h>
 #include <errno.h>
@@ -36,35 +37,30 @@
 #include <linux/keyboard.h>
 
 
-uint8_t *get_input_text();
+uint8_t *readTextFromStdin();
 KeySym *transform_stdin_to_KeySyms(uint8_t *text);
 int send_KeySym(KeySym KeySym);
 int send_key(int fd, struct input_event *ev, int value, KeyCode keycode);
 int create_event(struct input_event *ev, int type, int code, int value);
 int write_event(int fd, const struct input_event *ev);
-
-
-
+uint8_t* appendCharToString(uint8_t* str, uint8_t c);
 
 int main() {
-    
-    // uint8_t *text = get_input_text();
-    uint8_t *text = "Текст";
+    uint8_t* text = readTextFromStdin();
+    if (text != NULL) {
+        printf("Считанный текст: %s\n", text);
+    }
+    // uint8_t *text = "Текст!!!==";
     KeySym *arr = transform_stdin_to_KeySyms(text);
     
-    int32_t length = strlen((const char *)text);
+    int32_t length = strlen((char *)text);
 
     if (length <= 0)
     {
         return -1;
     }
-    
 
-    printf("length: %d\n", 5);
-
-    // send_KeySym(XK_A);
-
-    
+    // send_KeySym(XK_equal);
 
     for (int i = 0; i < length; i++)
     {
@@ -74,31 +70,20 @@ int main() {
     return 0;
 }
 
-uint8_t *get_input_text()
+uint8_t *readTextFromStdin()
 {
-    if (stdin == NULL) {
-        perror("Ошибка при открытии stdin");
-    }
+    uint8_t ch;
+    uint8_t *text = malloc(1*sizeof(uint8_t));
 
-    // Получение размера входного потока
-    fseek(stdin, 0, SEEK_END);
-    size_t size = ftell(stdin);
-    rewind(stdin);
-
-    uint8_t *text = malloc(sizeof(uint8_t)*size + 1);
     if (text == NULL) {
-        perror("Ошибка при выделении памяти");
+        printf("Ошибка выделения памяти!\n");
+        return NULL;
     }
 
-    // Чтение всего текста
-    size_t bytesRead = fread(text, sizeof(uint8_t), size, stdin);
-    if (bytesRead != size) {
-        perror("Произошла ошибка при чтении stdin");
-    }
+    text[0] = '\0';
 
-    text[size+1] = '\0';
-
-    printf("Весь текст: %s\n", text);
+    for (size_t i = 1; read(STDIN_FILENO, &ch, 1) > 0; i++)
+        text = appendCharToString(text, ch);
 
     return text;
 }
@@ -167,49 +152,24 @@ int send_KeySym(KeySym keysym)
 
     struct input_event ev;
 
-
-    XkbStateRec state;
-    XkbGetState(display, XkbUseCoreKbd, &state);
-    
-    // если есть CapsLacks
-    if (state.locked_mods & LockMask)
+    // если это буква и если эта буква заглавная
+    if (xkb_keysym_to_upper(keysym) == keysym)
     {
-        if (xkb_keysym_to_upper(keysym) == keysym)
-        {
-            // заглавная буква
-            send_key(fd, &ev, 1, keycode);
-            send_key(fd, &ev, 0, keycode);
-        } else
-        {
-            // строчная буква
-            send_key(fd, &ev, 1, XKeysymToKeycode(display, XK_Shift_L));
-            send_key(fd, &ev, 1, keycode);
-            send_key(fd, &ev, 0, XKeysymToKeycode(display, XK_Shift_L));
-            send_key(fd, &ev, 0, keycode);
-        }
+        // заглавная буква
+        send_key(fd, &ev, 1, XKeysymToKeycode(display, XK_Shift_L));
+        send_key(fd, &ev, 1, keycode);
+        send_key(fd, &ev, 0, XKeysymToKeycode(display, XK_Shift_L));
+        send_key(fd, &ev, 0, keycode);
+
     } else
     {
-        if (xkb_keysym_to_upper(keysym) == keysym)
-        {
-            // заглавная буква
-            send_key(fd, &ev, 1, XKeysymToKeycode(display, XK_Shift_L));
-            send_key(fd, &ev, 1, keycode);
-            send_key(fd, &ev, 0, XKeysymToKeycode(display, XK_Shift_L));
-            send_key(fd, &ev, 0, keycode);
-
-        } else
-        {
-            // строчная буква
-            send_key(fd, &ev, 1, keycode);
-            send_key(fd, &ev, 0, keycode);
-        }
+        // строчная буква
+        send_key(fd, &ev, 1, keycode);
+        send_key(fd, &ev, 0, keycode);
     }
-
-
-    
-    
      
     close(fd);
+    XCloseDisplay(display);
 
     return 0;
 }
@@ -261,5 +221,25 @@ int create_event(struct input_event *ev, int type, int code, int value)
 	ev->code = code;
 	ev->value = value;
 	return 0;
+}
+
+uint8_t* appendCharToString(uint8_t* str, uint8_t c)
+{
+    // Получение текущей длины строки
+    int length = strlen((char *)str);
+    printf("length gg: %d\n", length);
+
+    // Выделение памяти для новой строки
+    uint8_t* newStr = realloc(str, (length + 2) * sizeof(uint8_t));
+    if (newStr == NULL) {
+        printf("Ошибка выделения памяти!\n");
+        return str;
+    }
+
+    // Добавление символа в новую строку
+    newStr[length] = c;
+    newStr[length + 1] = '\0';
+
+    return newStr;
 }
 
