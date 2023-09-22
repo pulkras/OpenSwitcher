@@ -1,31 +1,25 @@
+
 # Requirements
 
 ## Debian
-
- 1. sudo apt-get install build-essential
- 2. sudo apt install xserver-xorg
- 3. sudo apt install libx11-dev libxkbcommon-x11-dev
- 4. sudo apt install libxkbcommon-dev
- 5. sudo apt install libicu-dev
- 6. sudo apt install xorg-dev
+1. `sudo apt-get install build-essential`
+2. `sudo apt install xserver-xorg`
+3. `sudo apt install libx11-dev libxkbcommon-x11-dev`
+4. `sudo apt install libxkbcommon-dev`
+5. `sudo apt install libicu-dev`
+6. `sudo apt install xorg-dev` 
 
 ## Docs generating
+1.  `sudo apt install doxygen`
 
- 1. sudo apt install doxygen
+# Install
+1.  `chmod +x ./preinstall.sh`
+2.  `chmod +x ./install.sh`
+3.  `make`
+4.  `make install`
+
+# Run in terminal
+1. Select the text
+2.  `xsel --primary -o | sudo openswitcher`
+
  
-# Compiling
-
- 1. chmod +x ./preinstall.sh
- 2. ./preinstall.sh
- 3. make
-
-# Run
-
- 1. myproject&
-
-  
-
-**Dont forgot kill myproject**
-
-
-сейчас выдели текст и используй команду xsel --primary -o | sudo ~/Programs/Project1/openswitcher чтобы текст был напечатан в командную строку

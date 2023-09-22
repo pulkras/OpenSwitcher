@@ -49,10 +49,7 @@ KeySym KeyCodeToKeySym(Display * display, KeyCode keycode, unsigned int event_ma
 
 int main() {
     uint8_t* text = readTextFromStdin();
-    if (text != NULL) {
-        // printf("Считанный текст: %s\n", text);
-    }
-    // uint8_t *text = "Текст!!!==";
+
     KeySym *arr = transform_stdin_to_KeySyms(text);
     
     int32_t length = strlen((char *)text);
@@ -61,8 +58,6 @@ int main() {
     {
         return -1;
     }
-
-    // send_KeySym(XK_equal);
 
     for (int i = 0; i < length; i++)
     {
@@ -129,18 +124,7 @@ int send_KeySym(KeySym keysym)
     if (!display) {
         fprintf(stderr, "Failed to open display\n");
         return -1;
-    }
-
-    // printf("KeyCode: %d \n", XKeysymToKeycode(display, XK_A));
-
-    Window focus;
-    int revert;
-    XGetInputFocus(display, &focus, &revert);
-    if (focus == None) {
-        fprintf(stderr, "No owner for PRIMARY selection\n");
-        XCloseDisplay(display);
-        return -1;
-    }
+    }    
 
     KeyCode keycode = XKeysymToKeycode(display, keysym);
 
@@ -152,17 +136,12 @@ int send_KeySym(KeySym keysym)
         return -1;
     }
     // ---------------------------------------------------
-    // printf("KeySym before: %s\n", XKeysymToString(keysym));
+    char* keysymName = XKeysymToString(keysym);
+
+    printf("Keysym: %s\n", keysymName);
+
+
     unsigned int event_mask = ShiftMask | LockMask;
-    // keysym = KeyCodeToKeySym(display, keycode, event_mask);
-
-    // printf("KeySym after: %s\n", XKeysymToString(keysym));
-
-
-
-
-
-
 
     struct input_event ev;
     UChar32 codepoint = xkb_keysym_to_utf32(keysym);
@@ -263,7 +242,6 @@ uint8_t* appendCharToString(uint8_t* str, uint8_t c)
 
     return newStr;
 }
-
 
 KeySym KeyCodeToKeySym(Display * display, KeyCode keycode, unsigned int event_mask)
 {

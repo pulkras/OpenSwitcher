@@ -26,6 +26,7 @@ CFLAGS  += $(shell pkg-config --cflags libevdev)
 SRCS = main.c
 OBJS = $(SRCS:.c=.o)
 BIN = openswitcher
+PROGRAMPATH = /usr/bin/
 
 .PHONY: all clean
 
@@ -39,3 +40,9 @@ $(BIN): $(OBJS)
 
 clean:
 	$(RM) $(OBJS) $(BIN)
+
+install:
+	bash ./install.sh
+
+uninstall:
+	sudo $(RM)  $(PROGRAMPATH)$(BIN)

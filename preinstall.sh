@@ -10,7 +10,7 @@ required_files=("$HOME/.xbindkeysrc" "$HOME/.xinitrc")
 defaultCombination="
 # Activate OpenSwitcher
 # To read about how to customise read \`man xbindkeys\`
-\"xsel --primary -o > ~/Programs/Project1/tmp && xsel --clear\"
+\"xsel --primary -o | sudo openswitcher\"
   Control + Alt_L
 "
 
