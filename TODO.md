@@ -5,3 +5,4 @@
  - [x] Replase getSelectedText to xsel util
  - [ ] Debug some problems when text replace
  - [ ] add package in apt repository 
+ - [ ] add docs information
