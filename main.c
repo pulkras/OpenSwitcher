@@ -26,6 +26,7 @@
 #include <unicode/ucnv.h>
 #include <unicode/ustdio.h>
 #include <unicode/utf8.h>
+#include <unicode/uchar.h>
 
 #include <libinput.h>
 
@@ -44,11 +45,12 @@ int send_key(int fd, struct input_event *ev, int value, KeyCode keycode);
 int create_event(struct input_event *ev, int type, int code, int value);
 int write_event(int fd, const struct input_event *ev);
 uint8_t* appendCharToString(uint8_t* str, uint8_t c);
+KeySym KeyCodeToKeySym(Display * display, KeyCode keycode, unsigned int event_mask);
 
 int main() {
     uint8_t* text = readTextFromStdin();
     if (text != NULL) {
-        printf("Считанный текст: %s\n", text);
+        // printf("Считанный текст: %s\n", text);
     }
     // uint8_t *text = "Текст!!!==";
     KeySym *arr = transform_stdin_to_KeySyms(text);
@@ -111,7 +113,7 @@ KeySym *transform_stdin_to_KeySyms(uint8_t *text)
         snprintf(codestr, 15, "U+%04X", codepoint);
         // printf("codepoint: %s ", codestr);
 
-        printf("index: %d codepoint: %s name: %s \n", index-1, codestr, codestr);
+        // printf("index: %d codepoint: %s name: %s \n", index-1, codestr, codestr);
 
         // This is expected to be KeySym = xkb_keysym_t
         arr[index-1] = (KeySym)keysym;
@@ -149,21 +151,41 @@ int send_KeySym(KeySym keysym)
         printf("Ошибка при открытии устройства ввода\n");
         return -1;
     }
+    // ---------------------------------------------------
+    // printf("KeySym before: %s\n", XKeysymToString(keysym));
+    unsigned int event_mask = ShiftMask | LockMask;
+    // keysym = KeyCodeToKeySym(display, keycode, event_mask);
+
+    // printf("KeySym after: %s\n", XKeysymToString(keysym));
+
+
+
+
+
+
 
     struct input_event ev;
+    UChar32 codepoint = xkb_keysym_to_utf32(keysym);
 
     // если это буква и если эта буква заглавная
-    if (xkb_keysym_to_upper(keysym) == keysym)
+    if (u_isalpha(codepoint) && xkb_keysym_to_upper(keysym) == keysym)
     {
         // заглавная буква
         send_key(fd, &ev, 1, XKeysymToKeycode(display, XK_Shift_L));
         send_key(fd, &ev, 1, keycode);
         send_key(fd, &ev, 0, XKeysymToKeycode(display, XK_Shift_L));
         send_key(fd, &ev, 0, keycode);
-
-    } else
+    // если это знак и если он равняется себе при нажатии shift
+    } else if(!u_isalpha(codepoint) && KeyCodeToKeySym(display, keycode, event_mask) == keysym)
     {
-        // строчная буква
+        // заглавный знак
+        send_key(fd, &ev, 1, XKeysymToKeycode(display, XK_Shift_L));
+        send_key(fd, &ev, 1, keycode);
+        send_key(fd, &ev, 0, XKeysymToKeycode(display, XK_Shift_L));
+        send_key(fd, &ev, 0, keycode);
+    }else
+    {
+        // строчная буква/знак
         send_key(fd, &ev, 1, keycode);
         send_key(fd, &ev, 0, keycode);
     }
@@ -227,7 +249,6 @@ uint8_t* appendCharToString(uint8_t* str, uint8_t c)
 {
     // Получение текущей длины строки
     int length = strlen((char *)str);
-    printf("length gg: %d\n", length);
 
     // Выделение памяти для новой строки
     uint8_t* newStr = realloc(str, (length + 2) * sizeof(uint8_t));
@@ -241,5 +262,73 @@ uint8_t* appendCharToString(uint8_t* str, uint8_t c)
     newStr[length + 1] = '\0';
 
     return newStr;
+}
+
+
+KeySym KeyCodeToKeySym(Display * display, KeyCode keycode, unsigned int event_mask)
+{
+    KeySym keysym = NoSymbol;
+
+    //Get the map
+    XkbDescPtr keyboard_map = XkbGetMap(display, XkbAllClientInfoMask, XkbUseCoreKbd);
+    if (keyboard_map) {
+        //What is diff between XkbKeyGroupInfo and XkbKeyNumGroups?
+        unsigned char info = XkbKeyGroupInfo(keyboard_map, keycode);
+        unsigned int num_groups = XkbKeyNumGroups(keyboard_map, keycode);
+
+        //Get the group
+        unsigned int group = 0x00;
+        switch (XkbOutOfRangeGroupAction(info)) {
+            case XkbRedirectIntoRange:
+                /* If the RedirectIntoRange flag is set, the four least significant
+                 * bits of the groups wrap control specify the index of a group to
+                 * which all illegal groups correspond. If the specified group is
+                 * also out of range, all illegal groups map to Group1.
+                 */
+                group = XkbOutOfRangeGroupInfo(info);
+                if (group >= num_groups) {
+                    group = 0;
+                }
+            break;
+
+            case XkbClampIntoRange:
+                /* If the ClampIntoRange flag is set, out-of-range groups correspond
+                 * to the nearest legal group. Effective groups larger than the
+                 * highest supported group are mapped to the highest supported group;
+                 * effective groups less than Group1 are mapped to Group1 . For
+                 * example, a key with two groups of symbols uses Group2 type and
+                 * symbols if the global effective group is either Group3 or Group4.
+                 */
+                group = num_groups - 1;
+            break;
+
+            case XkbWrapIntoRange:
+                /* If neither flag is set, group is wrapped into range using integer
+                 * modulus. For example, a key with two groups of symbols for which
+                 * groups wrap uses Group1 symbols if the global effective group is
+                 * Group3 or Group2 symbols if the global effective group is Group4.
+                 */
+            default:
+                if (num_groups != 0) {
+                    group %= num_groups;
+                }
+            break;
+        }
+
+        XkbKeyTypePtr key_type = XkbKeyKeyType(keyboard_map, keycode, group);
+        unsigned int active_mods = event_mask & key_type->mods.mask;
+
+        int i, level = 0;
+        for (i = 0; i < key_type->map_count; i++) {
+            if (key_type->map[i].active && key_type->map[i].mods.mask == active_mods) {
+                level = key_type->map[i].level;
+            }
+        }
+
+        keysym = XkbKeySymEntry(keyboard_map, keycode, level, group);
+        XkbFreeClientMap(keyboard_map, XkbAllClientInfoMask, true);
+    }
+
+    return keysym;
 }
 
