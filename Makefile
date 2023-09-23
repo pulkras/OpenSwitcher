@@ -28,7 +28,7 @@ OBJS = $(SRCS:.c=.o)
 BIN = openswitcher
 PROGRAMPATH = /usr/bin/
 
-.PHONY: all clean
+.PHONY: all clean install uninstall
 
 all: $(BIN)
 
