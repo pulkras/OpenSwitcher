@@ -6,3 +6,4 @@
  - [ ] Debug some problems when text replace
  - [ ] add package in apt repository 
  - [ ] add docs information
+ - [ ] need to fix bug when using combination keys. The command dont run immidiatly.
