@@ -5,5 +5,6 @@
  - [x] Replase getSelectedText to xsel util
  - [ ] Debug some problems when text replace
  - [ ] add package in apt repository 
+ - [ ] using autotools for assemblel packeges
  - [ ] add docs information
  - [ ] need to fix bug when using combination keys. The command dont run immidiatly.
