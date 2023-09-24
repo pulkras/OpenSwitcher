@@ -16,11 +16,9 @@
 
 #include <X11/XKBlib.h>
 
-// #include <xkbcommon/xkbcommon-keysyms.h>
 #include <xkbcommon/xkbcommon.h>
 #include <xkbcommon/xkbcommon-x11.h>
 
-// #include <xcb/xcb.h>
 
 #include <unicode/ustring.h>
 #include <unicode/ucnv.h>
@@ -28,10 +26,6 @@
 #include <unicode/utf8.h>
 #include <unicode/uchar.h>
 
-#include <libinput.h>
-
-#include <libevdev/libevdev.h>
-#include <libevdev/libevdev-uinput.h>
 
 #include <linux/input-event-codes.h>
 #include <linux/input.h>
