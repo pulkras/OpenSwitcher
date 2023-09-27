@@ -2,10 +2,11 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.71])
+AC_ARG_WITH([x], [AS_HELP_STRING([--with-x=yes], [Enable feature X])])
 AC_INIT([OpenSwitcher],[0.1.1],[gald.rus@yandex.ru])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
-# AC_CONFIG_SRCDIR([src/])  
-AC_CONFIG_HEADERS([config.h])
+# AC_CONFIG_SRCDIR([src/]) 
+AC_CONFIG_HEADERS([include/config.h])
 
 # Checks for programs.
 AC_PROG_CC
@@ -36,6 +37,7 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS(read strlen open write)
 
-AC_CONFIG_FILES([autoconf], [chmod +x autoconf])
+AC_CONFIG_FILES([scripts/install.sh], [chmod +x scripts/install.sh])
+AC_CONFIG_FILES([scripts/checkpkgs.sh], [chmod +x scripts/checkpkgs.sh])
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
