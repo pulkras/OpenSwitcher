@@ -132,7 +132,7 @@ int send_KeySym(KeySym keysym)
     // ---------------------------------------------------
     char* keysymName = XKeysymToString(keysym);
 
-    printf("Keysym: %s\n", keysymName);
+    // printf("Keysym: %s\n", keysymName);
 
 
     unsigned int event_mask = ShiftMask | LockMask;

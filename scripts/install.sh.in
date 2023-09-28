@@ -84,6 +84,6 @@ fi
 echo ""
 echo "Добавте вручную команду привязанную к комбинации клавиш, которой вам будет удобно"
 echo "Команда:"
-echo "sh -c \"/usr/bin/xsel --primary -o | sudo /usr/bin/openswitcher\""
+echo "sh -c \"/usr/bin/xsel --primary -o | sudo $programpath\""
 echo ""
 echo "Используйте scripts/checkpkgs.sh для проверки и установки нужных пакетов"

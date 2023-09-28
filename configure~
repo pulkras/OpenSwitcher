@@ -5856,11 +5856,9 @@ then :
 fi
 
 
-ac_config_files="$ac_config_files autoconf"
-
 ac_config_files="$ac_config_files scripts/install.sh"
 
-ac_config_files="$ac_config_files scripts/preinstall.sh"
+ac_config_files="$ac_config_files scripts/checkpkgs.sh"
 
 ac_config_files="$ac_config_files Makefile"
 
@@ -6586,9 +6584,8 @@ do
   case $ac_config_target in
     "include/config.h") CONFIG_HEADERS="$CONFIG_HEADERS include/config.h" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
-    "autoconf") CONFIG_FILES="$CONFIG_FILES autoconf" ;;
     "scripts/install.sh") CONFIG_FILES="$CONFIG_FILES scripts/install.sh" ;;
-    "scripts/preinstall.sh") CONFIG_FILES="$CONFIG_FILES scripts/preinstall.sh" ;;
+    "scripts/checkpkgs.sh") CONFIG_FILES="$CONFIG_FILES scripts/checkpkgs.sh" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
@@ -7281,9 +7278,8 @@ See \`config.log' for more details" "$LINENO" 5; }
   rm -f conftest-deps.mk
 }
  ;;
-    "autoconf":F) chmod +x autoconf ;;
     "scripts/install.sh":F) chmod +x scripts/install.sh ;;
-    "scripts/preinstall.sh":F) chmod +x scripts/preinstall.sh ;;
+    "scripts/checkpkgs.sh":F) chmod +x scripts/checkpkgs.sh ;;
 
   esac
 done # for ac_tag
