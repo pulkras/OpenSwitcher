@@ -1,3 +1,4 @@
-.vscode/
-.deps/
-autom4te.cache/
+.vscode
+.deps
+autom4te.cache
+src/trash.c

@@ -101,8 +101,9 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
-CONFIG_CLEAN_FILES = scripts/install.sh scripts/openswitcher.sh \
-	tests/checkpkgs.sh
+CONFIG_CLEAN_FILES = include/header.sh scripts/install.sh \
+	scripts/uninstall.sh scripts/openswitcher.sh \
+	tests/checkpkgs.sh tests/checkfiles.sh
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
@@ -374,8 +375,11 @@ am__set_b = \
   esac
 am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(top_srcdir)/include/config.h.in \
+	$(top_srcdir)/include/header.sh.in \
 	$(top_srcdir)/scripts/install.sh.in \
 	$(top_srcdir)/scripts/openswitcher.sh.in \
+	$(top_srcdir)/scripts/uninstall.sh.in \
+	$(top_srcdir)/tests/checkfiles.sh.in \
 	$(top_srcdir)/tests/checkpkgs.sh.in AUTHORS COPYING ChangeLog \
 	INSTALL NEWS README.md compile config.guess config.sub depcomp \
 	install-sh missing test-driver
@@ -510,7 +514,7 @@ openswitcher_LDADD = $(DEPS_LIBS)
 bin_SCRIPTS = scripts/openswitcher.sh
 EXTRA_DIST = scripts/openswitcher.sh.in
 CLEANFILES = $(bin_SCRIPTS)
-TESTS = tests/checkpkgs.sh
+TESTS = tests/checkpkgs.sh tests/checkfiles.sh
 TEST_EXTENSIONS = .sh
 all: all-am
 
@@ -564,11 +568,17 @@ $(top_srcdir)/include/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f include/config.h include/stamp-h1
+include/header.sh: $(top_builddir)/config.status $(top_srcdir)/include/header.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 scripts/install.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/install.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+scripts/uninstall.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/uninstall.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 scripts/openswitcher.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/openswitcher.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 tests/checkpkgs.sh: $(top_builddir)/config.status $(top_srcdir)/tests/checkpkgs.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+tests/checkfiles.sh: $(top_builddir)/config.status $(top_srcdir)/tests/checkfiles.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
@@ -1237,7 +1247,7 @@ install-exec-hook: $(bin_PROGRAMS)
 	scripts/install.sh
 
 uninstall-hook:
-	sudo rm /etc/sudoers.d/openswitcher
+	scripts/uninstall.sh
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -1,21 +1,14 @@
 #!/bin/bash
 
-programpath=/usr/local/bin/openswitcher
-sudoerspath=/etc/sudoers.d/openswitcher
-if [ ! "$SUDO_USER" == "" ]; then
-	USER="$SUDO_USER"
-fi
-rule="
-# Rule for correctly working OpenSwitcher programm 
-$USER ALL = (root) NOPASSWD: $programpath
-"
+my_dir="$(dirname "$0")"
+source "$my_dir/../include/header.sh"
 
 if [ ! -f "$sudoerspath" ]; then
 	echo "Добавляется правило для корректной работы OPenSwitcher в $sudoerspath:"
 	echo ""
 	echo "$rule"
 	sudo touch $sudoerspath
-	echo "$rule" | sudo tee $sudoerspath
+	echo "$rule" | sudo tee $sudoerspath > /dev/null
 
 	if ! sudo grep -q "$rule" "$sudoerspath"; then
 		echo "Правило не добалено, завершение установки"
@@ -47,4 +40,3 @@ echo "Добавте вручную команду привязанную к к�
 echo "Команда:"
 echo "sh -c \"/usr/bin/xsel --primary -o | sudo $programpath\""
 echo ""
-echo "Используйте scripts/checkpkgs.sh для проверки и установки нужных пакетов"

@@ -35,8 +35,11 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS(read strlen open write)
 
+AC_CONFIG_FILES([include/header.sh], [chmod +x include/header.sh])
 AC_CONFIG_FILES([scripts/install.sh], [chmod +x scripts/install.sh])
+AC_CONFIG_FILES([scripts/uninstall.sh], [chmod +x scripts/uninstall.sh])
 AC_CONFIG_FILES([scripts/openswitcher.sh], [chmod +x scripts/openswitcher.sh])
 AC_CONFIG_FILES([tests/checkpkgs.sh], [chmod +x tests/checkpkgs.sh])
+AC_CONFIG_FILES([tests/checkfiles.sh], [chmod +x tests/checkfiles.sh])
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

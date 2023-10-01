@@ -11,6 +11,7 @@ EXTRA_DIST = scripts/openswitcher.sh.in
 CLEANFILES = $(bin_SCRIPTS)
 
 TESTS = tests/checkpkgs.sh
+TESTS += tests/checkfiles.sh
 TEST_EXTENSIONS = .sh
 
 
@@ -18,5 +19,5 @@ install-exec-hook: $(bin_PROGRAMS)
 	scripts/install.sh
 
 uninstall-hook:
-	sudo rm /etc/sudoers.d/openswitcher
+	scripts/uninstall.sh
 

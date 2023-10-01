@@ -1,0 +1,9 @@
+#!/bin/bash
+my_dir="$(dirname "$0")"
+source "$my_dir/../include/header.sh"
+
+echo "Удаление $sudoerspath"
+sudo rm "$sudoerspath"
+
+echo "Удаление стандартной комбаниции клавишь из $HOME_SUDO_USER/.xbindkeysrc."
+grep -v "$defaultCombination" "$HOME_SUDO_USER/.xbindkeysrc" > "/tmp/.xbindkeysrc.tmp" && mv -f "/tmp/.xbindkeysrc.tmp" "$HOME_SUDO_USER/.xbindkeysrc"

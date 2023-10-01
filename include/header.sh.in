@@ -1,0 +1,30 @@
+#!/bin/bash
+
+programpath=/usr/local/bin/openswitcher
+sudoerspath=/etc/sudoers.d/openswitcher
+
+if [ ! "$SUDO_USER" == "" ]; then
+	USER="$SUDO_USER"
+fi
+
+HOME_SUDO_USER=$(eval echo ~$SUDO_USER)
+
+rule="
+# Rule for correctly working OpenSwitcher programm 
+$USER ALL = (root) NOPASSWD: $programpath
+"
+
+# Requested files, can be configured yourself
+required_files=("$HOME/.xbindkeysrc" "$HOME/.xinitrc")
+
+# Activate OpenSwitcher using ctr+alt
+defaultCombination="# Activate OpenSwitcher
+# To read about how to customise read \`man xbindkeys\`
+# To read where is keys see #include <X11/keysym.h>
+\"openswitcher.sh\"
+Control + Alt_L"
+
+# Requested packages 
+required_packages=("build-essential" "xserver-xorg" "xbindkeys" "libx11-dev" "x11-utils" "libxkbcommon-x11-dev" "libxkbcommon-dev" "libicu-dev")
+
+distro=$(cat /etc/os-release | grep -w ID | cut -d'=' -f2)
