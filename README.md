@@ -18,8 +18,9 @@
 1. `git clone -b test https://github.com/pulkras/OpenSwitcher`
 2. **Read INSTALL**
 3. `./configure`
-4. `make`
-5. `sudo make install`
+4. `make check`
+5. `make`
+6. `sudo make install`
 
 # Run in terminal
 

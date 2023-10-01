@@ -3,9 +3,8 @@
 
 AC_PREREQ([2.71])
 AC_ARG_WITH([x], [AS_HELP_STRING([--with-x=yes], [Enable feature X])])
-AC_INIT([OpenSwitcher],[0.1.1],[gald.rus@yandex.ru])
+AC_INIT([OpenSwitcher],[0.9.0],[gald.rus@yandex.ru])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
-# AC_CONFIG_SRCDIR([src/]) 
 AC_CONFIG_HEADERS([include/config.h])
 
 # Checks for programs.
@@ -24,7 +23,6 @@ AC_PATH_X
 AC_INCLUDES_DEFAULT
 AC_CHECK_HEADERS(fcntl.h unistd.h)
 
-
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
 AC_TYPE_INT32_T
@@ -38,6 +36,7 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS(read strlen open write)
 
 AC_CONFIG_FILES([scripts/install.sh], [chmod +x scripts/install.sh])
-AC_CONFIG_FILES([scripts/checkpkgs.sh], [chmod +x scripts/checkpkgs.sh])
+AC_CONFIG_FILES([scripts/openswitcher.sh], [chmod +x scripts/openswitcher.sh])
+AC_CONFIG_FILES([tests/checkpkgs.sh], [chmod +x tests/checkpkgs.sh])
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

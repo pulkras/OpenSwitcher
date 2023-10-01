@@ -1,3 +1,4 @@
+// If you read it you shold know that X11 is absolutely old shit please try support to develop new Window Meneger
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -7,6 +8,8 @@
 
 #include <fcntl.h>
 #include <errno.h>
+#include <time.h>
+
 
 #include <X11/Xlib.h>
 #include <X11/extensions/XTest.h>
@@ -41,6 +44,9 @@ int write_event(int fd, const struct input_event *ev);
 uint8_t* appendCharToString(uint8_t* str, uint8_t c);
 KeySym KeyCodeToKeySym(Display * display, KeyCode keycode, unsigned int event_mask);
 
+
+
+
 int main() {
     uint8_t* text = readTextFromStdin();
 
@@ -57,7 +63,7 @@ int main() {
     {
         send_KeySym(arr[i]);
     }
-    
+
     return 0;
 }
 

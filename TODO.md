@@ -3,8 +3,9 @@
  - [x]  Create function that print keycodes events (print processed text)
  - [x] Replace check_combination to using util may be gnome or kde
  - [x] Replase getSelectedText to xsel util
- - [ ] Debug some problems when text replace
+ - [x] Debug some problems when text replace
  - [ ] add package in apt repository 
  - [x] using autotools for assemblel packeges
  - [ ] add docs information
- - [ ] need to fix bug when using combination keys. The command dont run immidiatly.
+ - [x] need to fix bug when using combination keys. The command dont run immidiatly.
+ - [ ] add autoswitch to another language

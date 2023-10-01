@@ -10,10 +10,11 @@ required_files=("$HOME/.xbindkeysrc" "$HOME/.xinitrc")
 defaultCombination="
 # Activate OpenSwitcher
 # To read about how to customise read \`man xbindkeys\`
-\"xsel --primary -o | sudo openswitcher\"
+# To read where is keys see #include <X11/keysym.h>
+\"openswitcher.sh\"
   Control + Alt_L
 "
-
+# For Debian
 # Check requested packages 
 for package in "${required_packages[@]}"; do
     if ! dpkg -s "$package" >/dev/null; then

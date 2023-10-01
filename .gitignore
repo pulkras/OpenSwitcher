@@ -1,8 +1,3 @@
-.vscode
-main1.c
-main1.o
-myproject
-trash.c
-tmp
+.vscode/
+.deps/
 autom4te.cache/
-tmp
