@@ -35,8 +35,4 @@ else
 	
 fi
 
-echo ""
-echo "Добавте вручную команду привязанную к комбинации клавиш, которой вам будет удобно"
-echo "Команда:"
-echo "sh -c \"/usr/bin/xsel --primary -o | sudo $programpath\""
-echo ""
+echo "Установка завершена."

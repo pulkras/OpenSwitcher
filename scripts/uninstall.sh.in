@@ -5,5 +5,8 @@ source "$my_dir/../include/header.sh"
 echo "Удаление $sudoerspath"
 sudo rm "$sudoerspath"
 
-echo "Удаление стандартной комбаниции клавишь из $HOME_SUDO_USER/.xbindkeysrc."
-grep -v "$defaultCombination" "$HOME_SUDO_USER/.xbindkeysrc" > "/tmp/.xbindkeysrc.tmp" && mv -f "/tmp/.xbindkeysrc.tmp" "$HOME_SUDO_USER/.xbindkeysrc"
+echo "Удаление стандартной комбаниции клавишь из $HOME_USER/.xbindkeysrc."
+grep -v "$defaultCombination" "$HOME_USER/.xbindkeysrc" > "/tmp/.xbindkeysrc.tmp" && mv -f "/tmp/.xbindkeysrc.tmp" "$HOME_USER/.xbindkeysrc"
+
+echo "Удаление стандарного автозапуска из $HOME_USER/.xinitrc."
+grep -v "$default_autostart_xbindkeys" "$HOME_USER/.xinitrc" > "/tmp/.xinitrc.tmp" && mv -f "/tmp/.xinitrc.tmp" "$HOME_USER/.xinitrc"

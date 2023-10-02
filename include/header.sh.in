@@ -7,7 +7,7 @@ if [ ! "$SUDO_USER" == "" ]; then
 	USER="$SUDO_USER"
 fi
 
-HOME_SUDO_USER=$(eval echo ~$SUDO_USER)
+HOME_USER=$(eval echo ~$USER)
 
 rule="
 # Rule for correctly working OpenSwitcher programm 
@@ -15,7 +15,9 @@ $USER ALL = (root) NOPASSWD: $programpath
 "
 
 # Requested files, can be configured yourself
-required_files=("$HOME/.xbindkeysrc" "$HOME/.xinitrc")
+required_files=("$HOME_USER/.xbindkeysrc" "$HOME_USER/.xinitrc")
+
+default_autostart_xbindkeys="xbindkeys&"
 
 # Activate OpenSwitcher using ctr+alt
 defaultCombination="# Activate OpenSwitcher
