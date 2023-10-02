@@ -24,9 +24,9 @@
 
 # Run in terminal
 
-1. **Select the text**
-2. **Press default Ctr+Alt_L combination**
-3. **Voila ! :)**
+1. Select the text
+2. Press default Ctr+Alt_L combination
+3. Voila ! :)
 
 # Run in terminal
 
