@@ -2,10 +2,12 @@
 
 my_dir="$(dirname "$0")"
 source "$my_dir/../include/header.sh"
+source "$my_dir/installpkgs.sh"
+source "$my_dir/installfiles.sh"
+
 
 if [ ! -f "$sudoerspath" ]; then
 	echo "Добавляется правило для корректной работы OPenSwitcher в $sudoerspath:"
-	echo ""
 	echo "$rule"
 	sudo touch $sudoerspath
 	echo "$rule" | sudo tee $sudoerspath > /dev/null

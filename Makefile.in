@@ -103,7 +103,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES = include/header.sh scripts/install.sh \
 	scripts/uninstall.sh scripts/openswitcher.sh \
-	tests/checkpkgs.sh tests/checkfiles.sh
+	scripts/installpkgs.sh scripts/installfiles.sh
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
@@ -377,12 +377,12 @@ am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(top_srcdir)/include/config.h.in \
 	$(top_srcdir)/include/header.sh.in \
 	$(top_srcdir)/scripts/install.sh.in \
+	$(top_srcdir)/scripts/installfiles.sh.in \
+	$(top_srcdir)/scripts/installpkgs.sh.in \
 	$(top_srcdir)/scripts/openswitcher.sh.in \
-	$(top_srcdir)/scripts/uninstall.sh.in \
-	$(top_srcdir)/tests/checkfiles.sh.in \
-	$(top_srcdir)/tests/checkpkgs.sh.in AUTHORS COPYING ChangeLog \
-	INSTALL NEWS README.md compile config.guess config.sub depcomp \
-	install-sh missing test-driver
+	$(top_srcdir)/scripts/uninstall.sh.in AUTHORS COPYING \
+	ChangeLog INSTALL NEWS README.md compile config.guess \
+	config.sub depcomp install-sh missing test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -576,9 +576,9 @@ scripts/uninstall.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/uninst
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 scripts/openswitcher.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/openswitcher.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-tests/checkpkgs.sh: $(top_builddir)/config.status $(top_srcdir)/tests/checkpkgs.sh.in
+scripts/installpkgs.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/installpkgs.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-tests/checkfiles.sh: $(top_builddir)/config.status $(top_srcdir)/tests/checkfiles.sh.in
+scripts/installfiles.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/installfiles.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
@@ -1245,7 +1245,6 @@ uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS
 
 install-exec-hook: $(bin_PROGRAMS)
 	scripts/install.sh
-	make check
 
 uninstall-hook:
 	scripts/uninstall.sh

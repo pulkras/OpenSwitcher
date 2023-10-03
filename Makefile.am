@@ -17,7 +17,6 @@ TEST_EXTENSIONS = .sh
 
 install-exec-hook: $(bin_PROGRAMS)
 	scripts/install.sh
-	make check
 
 uninstall-hook:
 	scripts/uninstall.sh

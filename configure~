@@ -5854,7 +5854,11 @@ then :
 fi
 
 
+ac_config_files="$ac_config_files include/header.sh"
+
 ac_config_files="$ac_config_files scripts/install.sh"
+
+ac_config_files="$ac_config_files scripts/uninstall.sh"
 
 ac_config_files="$ac_config_files scripts/openswitcher.sh"
 
@@ -6586,7 +6590,9 @@ do
   case $ac_config_target in
     "include/config.h") CONFIG_HEADERS="$CONFIG_HEADERS include/config.h" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
+    "include/header.sh") CONFIG_FILES="$CONFIG_FILES include/header.sh" ;;
     "scripts/install.sh") CONFIG_FILES="$CONFIG_FILES scripts/install.sh" ;;
+    "scripts/uninstall.sh") CONFIG_FILES="$CONFIG_FILES scripts/uninstall.sh" ;;
     "scripts/openswitcher.sh") CONFIG_FILES="$CONFIG_FILES scripts/openswitcher.sh" ;;
     "tests/checkpkgs.sh") CONFIG_FILES="$CONFIG_FILES tests/checkpkgs.sh" ;;
     "tests/checkfiles.sh") CONFIG_FILES="$CONFIG_FILES tests/checkfiles.sh" ;;
@@ -7282,7 +7288,9 @@ See \`config.log' for more details" "$LINENO" 5; }
   rm -f conftest-deps.mk
 }
  ;;
+    "include/header.sh":F) chmod +x include/header.sh ;;
     "scripts/install.sh":F) chmod +x scripts/install.sh ;;
+    "scripts/uninstall.sh":F) chmod +x scripts/uninstall.sh ;;
     "scripts/openswitcher.sh":F) chmod +x scripts/openswitcher.sh ;;
     "tests/checkpkgs.sh":F) chmod +x tests/checkpkgs.sh ;;
     "tests/checkfiles.sh":F) chmod +x tests/checkfiles.sh ;;

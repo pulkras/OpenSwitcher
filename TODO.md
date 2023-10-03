@@ -9,3 +9,4 @@
  - [ ] add docs information
  - [x] need to fix bug when using combination keys. The command dont run immidiatly.
  - [ ] add autoswitch to another language
+ - [ ] use Dbus to emulate change keyboard layouts

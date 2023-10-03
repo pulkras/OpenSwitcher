@@ -1,8 +1,5 @@
 #!/bin/bash
 
-my_dir="$(dirname "$0")"
-source "$my_dir/../include/header.sh"
-
 if [ "$distro" = "debian" ]; then
 	# For Debian
 	# Check requested packages 
@@ -20,4 +17,5 @@ if [ "$distro" = "debian" ]; then
 fi
 
 
-echo "Проверка завершена."
+echo "Проверка завершена.
+"
