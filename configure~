@@ -5858,13 +5858,16 @@ ac_config_files="$ac_config_files include/header.sh"
 
 ac_config_files="$ac_config_files scripts/install.sh"
 
+ac_config_files="$ac_config_files scripts/installpkgs.sh"
+
+ac_config_files="$ac_config_files scripts/installfiles.sh"
+
 ac_config_files="$ac_config_files scripts/uninstall.sh"
 
 ac_config_files="$ac_config_files scripts/openswitcher.sh"
 
-ac_config_files="$ac_config_files tests/checkpkgs.sh"
+ac_config_files="$ac_config_files scripts/switchLayout.sh"
 
-ac_config_files="$ac_config_files tests/checkfiles.sh"
 
 ac_config_files="$ac_config_files Makefile"
 
@@ -6592,10 +6595,11 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "include/header.sh") CONFIG_FILES="$CONFIG_FILES include/header.sh" ;;
     "scripts/install.sh") CONFIG_FILES="$CONFIG_FILES scripts/install.sh" ;;
+    "scripts/installpkgs.sh") CONFIG_FILES="$CONFIG_FILES scripts/installpkgs.sh" ;;
+    "scripts/installfiles.sh") CONFIG_FILES="$CONFIG_FILES scripts/installfiles.sh" ;;
     "scripts/uninstall.sh") CONFIG_FILES="$CONFIG_FILES scripts/uninstall.sh" ;;
     "scripts/openswitcher.sh") CONFIG_FILES="$CONFIG_FILES scripts/openswitcher.sh" ;;
-    "tests/checkpkgs.sh") CONFIG_FILES="$CONFIG_FILES tests/checkpkgs.sh" ;;
-    "tests/checkfiles.sh") CONFIG_FILES="$CONFIG_FILES tests/checkfiles.sh" ;;
+    "scripts/switchLayout.sh") CONFIG_FILES="$CONFIG_FILES scripts/switchLayout.sh" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
@@ -7290,10 +7294,11 @@ See \`config.log' for more details" "$LINENO" 5; }
  ;;
     "include/header.sh":F) chmod +x include/header.sh ;;
     "scripts/install.sh":F) chmod +x scripts/install.sh ;;
+    "scripts/installpkgs.sh":F) chmod +x scripts/installpkgs.sh ;;
+    "scripts/installfiles.sh":F) chmod +x scripts/installfiles.sh ;;
     "scripts/uninstall.sh":F) chmod +x scripts/uninstall.sh ;;
     "scripts/openswitcher.sh":F) chmod +x scripts/openswitcher.sh ;;
-    "tests/checkpkgs.sh":F) chmod +x tests/checkpkgs.sh ;;
-    "tests/checkfiles.sh":F) chmod +x tests/checkfiles.sh ;;
+    "scripts/switchLayout.sh":F) chmod +x scripts/switchLayout.sh ;;
 
   esac
 done # for ac_tag

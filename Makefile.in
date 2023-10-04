@@ -102,8 +102,9 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES = include/header.sh scripts/install.sh \
+	scripts/installpkgs.sh scripts/installfiles.sh \
 	scripts/uninstall.sh scripts/openswitcher.sh \
-	scripts/installpkgs.sh scripts/installfiles.sh
+	scripts/switchLayout.sh
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
@@ -199,180 +200,7 @@ am__define_uniq_tagged_files = \
   unique=`for i in $$list; do \
     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
   done | $(am__uniquify_input)`
-AM_RECURSIVE_TARGETS = cscope check recheck
-am__tty_colors_dummy = \
-  mgn= red= grn= lgn= blu= brg= std=; \
-  am__color_tests=no
-am__tty_colors = { \
-  $(am__tty_colors_dummy); \
-  if test "X$(AM_COLOR_TESTS)" = Xno; then \
-    am__color_tests=no; \
-  elif test "X$(AM_COLOR_TESTS)" = Xalways; then \
-    am__color_tests=yes; \
-  elif test "X$$TERM" != Xdumb && { test -t 1; } 2>/dev/null; then \
-    am__color_tests=yes; \
-  fi; \
-  if test $$am__color_tests = yes; then \
-    red='[0;31m'; \
-    grn='[0;32m'; \
-    lgn='[1;32m'; \
-    blu='[1;34m'; \
-    mgn='[0;35m'; \
-    brg='[1m'; \
-    std='[m'; \
-  fi; \
-}
-am__recheck_rx = ^[ 	]*:recheck:[ 	]*
-am__global_test_result_rx = ^[ 	]*:global-test-result:[ 	]*
-am__copy_in_global_log_rx = ^[ 	]*:copy-in-global-log:[ 	]*
-# A command that, given a newline-separated list of test names on the
-# standard input, print the name of the tests that are to be re-run
-# upon "make recheck".
-am__list_recheck_tests = $(AWK) '{ \
-  recheck = 1; \
-  while ((rc = (getline line < ($$0 ".trs"))) != 0) \
-    { \
-      if (rc < 0) \
-        { \
-          if ((getline line2 < ($$0 ".log")) < 0) \
-	    recheck = 0; \
-          break; \
-        } \
-      else if (line ~ /$(am__recheck_rx)[nN][Oo]/) \
-        { \
-          recheck = 0; \
-          break; \
-        } \
-      else if (line ~ /$(am__recheck_rx)[yY][eE][sS]/) \
-        { \
-          break; \
-        } \
-    }; \
-  if (recheck) \
-    print $$0; \
-  close ($$0 ".trs"); \
-  close ($$0 ".log"); \
-}'
-# A command that, given a newline-separated list of test names on the
-# standard input, create the global log from their .trs and .log files.
-am__create_global_log = $(AWK) ' \
-function fatal(msg) \
-{ \
-  print "fatal: making $@: " msg | "cat >&2"; \
-  exit 1; \
-} \
-function rst_section(header) \
-{ \
-  print header; \
-  len = length(header); \
-  for (i = 1; i <= len; i = i + 1) \
-    printf "="; \
-  printf "\n\n"; \
-} \
-{ \
-  copy_in_global_log = 1; \
-  global_test_result = "RUN"; \
-  while ((rc = (getline line < ($$0 ".trs"))) != 0) \
-    { \
-      if (rc < 0) \
-         fatal("failed to read from " $$0 ".trs"); \
-      if (line ~ /$(am__global_test_result_rx)/) \
-        { \
-          sub("$(am__global_test_result_rx)", "", line); \
-          sub("[ 	]*$$", "", line); \
-          global_test_result = line; \
-        } \
-      else if (line ~ /$(am__copy_in_global_log_rx)[nN][oO]/) \
-        copy_in_global_log = 0; \
-    }; \
-  if (copy_in_global_log) \
-    { \
-      rst_section(global_test_result ": " $$0); \
-      while ((rc = (getline line < ($$0 ".log"))) != 0) \
-      { \
-        if (rc < 0) \
-          fatal("failed to read from " $$0 ".log"); \
-        print line; \
-      }; \
-      printf "\n"; \
-    }; \
-  close ($$0 ".trs"); \
-  close ($$0 ".log"); \
-}'
-# Restructured Text title.
-am__rst_title = { sed 's/.*/   &   /;h;s/./=/g;p;x;s/ *$$//;p;g' && echo; }
-# Solaris 10 'make', and several other traditional 'make' implementations,
-# pass "-e" to $(SHELL), and POSIX 2008 even requires this.  Work around it
-# by disabling -e (using the XSI extension "set +e") if it's set.
-am__sh_e_setup = case $$- in *e*) set +e;; esac
-# Default flags passed to test drivers.
-am__common_driver_flags = \
-  --color-tests "$$am__color_tests" \
-  --enable-hard-errors "$$am__enable_hard_errors" \
-  --expect-failure "$$am__expect_failure"
-# To be inserted before the command running the test.  Creates the
-# directory for the log if needed.  Stores in $dir the directory
-# containing $f, in $tst the test, in $log the log.  Executes the
-# developer- defined test setup AM_TESTS_ENVIRONMENT (if any), and
-# passes TESTS_ENVIRONMENT.  Set up options for the wrapper that
-# will run the test scripts (or their associated LOG_COMPILER, if
-# thy have one).
-am__check_pre = \
-$(am__sh_e_setup);					\
-$(am__vpath_adj_setup) $(am__vpath_adj)			\
-$(am__tty_colors);					\
-srcdir=$(srcdir); export srcdir;			\
-case "$@" in						\
-  */*) am__odir=`echo "./$@" | sed 's|/[^/]*$$||'`;;	\
-    *) am__odir=.;; 					\
-esac;							\
-test "x$$am__odir" = x"." || test -d "$$am__odir" 	\
-  || $(MKDIR_P) "$$am__odir" || exit $$?;		\
-if test -f "./$$f"; then dir=./;			\
-elif test -f "$$f"; then dir=;				\
-else dir="$(srcdir)/"; fi;				\
-tst=$$dir$$f; log='$@'; 				\
-if test -n '$(DISABLE_HARD_ERRORS)'; then		\
-  am__enable_hard_errors=no; 				\
-else							\
-  am__enable_hard_errors=yes; 				\
-fi; 							\
-case " $(XFAIL_TESTS) " in				\
-  *[\ \	]$$f[\ \	]* | *[\ \	]$$dir$$f[\ \	]*) \
-    am__expect_failure=yes;;				\
-  *)							\
-    am__expect_failure=no;;				\
-esac; 							\
-$(AM_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)
-# A shell command to get the names of the tests scripts with any registered
-# extension removed (i.e., equivalently, the names of the test logs, with
-# the '.log' extension removed).  The result is saved in the shell variable
-# '$bases'.  This honors runtime overriding of TESTS and TEST_LOGS.  Sadly,
-# we cannot use something simpler, involving e.g., "$(TEST_LOGS:.log=)",
-# since that might cause problem with VPATH rewrites for suffix-less tests.
-# See also 'test-harness-vpath-rewrite.sh' and 'test-trs-basic.sh'.
-am__set_TESTS_bases = \
-  bases='$(TEST_LOGS)'; \
-  bases=`for i in $$bases; do echo $$i; done | sed 's/\.log$$//'`; \
-  bases=`echo $$bases`
-AM_TESTSUITE_SUMMARY_HEADER = ' for $(PACKAGE_STRING)'
-RECHECK_LOGS = $(TEST_LOGS)
-TEST_SUITE_LOG = test-suite.log
-am__test_logs1 = $(TESTS:=.log)
-am__test_logs2 = $(am__test_logs1:@EXEEXT@.log=.log)
-TEST_LOGS = $(am__test_logs2:.sh.log=.log)
-SH_LOG_DRIVER = $(SHELL) $(top_srcdir)/test-driver
-SH_LOG_COMPILE = $(SH_LOG_COMPILER) $(AM_SH_LOG_FLAGS) $(SH_LOG_FLAGS)
-am__set_b = \
-  case '$@' in \
-    */*) \
-      case '$*' in \
-        */*) b='$*';; \
-          *) b=`echo '$@' | sed 's/\.log$$//'`; \
-       esac;; \
-    *) \
-      b='$*';; \
-  esac
+AM_RECURSIVE_TARGETS = cscope
 am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(top_srcdir)/include/config.h.in \
 	$(top_srcdir)/include/header.sh.in \
@@ -380,9 +208,10 @@ am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(top_srcdir)/scripts/installfiles.sh.in \
 	$(top_srcdir)/scripts/installpkgs.sh.in \
 	$(top_srcdir)/scripts/openswitcher.sh.in \
+	$(top_srcdir)/scripts/switchLayout.sh.in \
 	$(top_srcdir)/scripts/uninstall.sh.in AUTHORS COPYING \
 	ChangeLog INSTALL NEWS README.md compile config.guess \
-	config.sub depcomp install-sh missing test-driver
+	config.sub depcomp install-sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -511,15 +340,14 @@ top_srcdir = @top_srcdir@
 openswitcher_SOURCES = src/main.c
 openswitcher_CFLAGS = $(DEPS_CFLAGS)
 openswitcher_LDADD = $(DEPS_LIBS)
-bin_SCRIPTS = scripts/openswitcher.sh
-EXTRA_DIST = scripts/openswitcher.sh.in
+bin_SCRIPTS = scripts/openswitcher.sh scripts/switchLayout.sh
+EXTRA_DIST = scripts/openswitcher.sh.in scripts/switchLayout.sh.in
 CLEANFILES = $(bin_SCRIPTS)
-TESTS = tests/checkpkgs.sh tests/checkfiles.sh
 TEST_EXTENSIONS = .sh
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .log .o .obj .sh .sh$(EXEEXT) .trs
+.SUFFIXES: .c .o .obj
 am--refresh: Makefile
 	@:
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
@@ -572,13 +400,15 @@ include/header.sh: $(top_builddir)/config.status $(top_srcdir)/include/header.sh
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 scripts/install.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/install.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
+scripts/installpkgs.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/installpkgs.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+scripts/installfiles.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/installfiles.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 scripts/uninstall.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/uninstall.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 scripts/openswitcher.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/openswitcher.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-scripts/installpkgs.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/installpkgs.sh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-scripts/installfiles.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/installfiles.sh.in
+scripts/switchLayout.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/switchLayout.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
@@ -773,162 +603,6 @@ cscopelist-am: $(am__tagged_files)
 distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 	-rm -f cscope.out cscope.in.out cscope.po.out cscope.files
-
-# Recover from deleted '.trs' file; this should ensure that
-# "rm -f foo.log; make foo.trs" re-run 'foo.test', and re-create
-# both 'foo.log' and 'foo.trs'.  Break the recipe in two subshells
-# to avoid problems with "make -n".
-.log.trs:
-	rm -f $< $@
-	$(MAKE) $(AM_MAKEFLAGS) $<
-
-# Leading 'am--fnord' is there to ensure the list of targets does not
-# expand to empty, as could happen e.g. with make check TESTS=''.
-am--fnord $(TEST_LOGS) $(TEST_LOGS:.log=.trs): $(am__force_recheck)
-am--force-recheck:
-	@:
-
-$(TEST_SUITE_LOG): $(TEST_LOGS)
-	@$(am__set_TESTS_bases); \
-	am__f_ok () { test -f "$$1" && test -r "$$1"; }; \
-	redo_bases=`for i in $$bases; do \
-	              am__f_ok $$i.trs && am__f_ok $$i.log || echo $$i; \
-	            done`; \
-	if test -n "$$redo_bases"; then \
-	  redo_logs=`for i in $$redo_bases; do echo $$i.log; done`; \
-	  redo_results=`for i in $$redo_bases; do echo $$i.trs; done`; \
-	  if $(am__make_dryrun); then :; else \
-	    rm -f $$redo_logs && rm -f $$redo_results || exit 1; \
-	  fi; \
-	fi; \
-	if test -n "$$am__remaking_logs"; then \
-	  echo "fatal: making $(TEST_SUITE_LOG): possible infinite" \
-	       "recursion detected" >&2; \
-	elif test -n "$$redo_logs"; then \
-	  am__remaking_logs=yes $(MAKE) $(AM_MAKEFLAGS) $$redo_logs; \
-	fi; \
-	if $(am__make_dryrun); then :; else \
-	  st=0;  \
-	  errmsg="fatal: making $(TEST_SUITE_LOG): failed to create"; \
-	  for i in $$redo_bases; do \
-	    test -f $$i.trs && test -r $$i.trs \
-	      || { echo "$$errmsg $$i.trs" >&2; st=1; }; \
-	    test -f $$i.log && test -r $$i.log \
-	      || { echo "$$errmsg $$i.log" >&2; st=1; }; \
-	  done; \
-	  test $$st -eq 0 || exit 1; \
-	fi
-	@$(am__sh_e_setup); $(am__tty_colors); $(am__set_TESTS_bases); \
-	ws='[ 	]'; \
-	results=`for b in $$bases; do echo $$b.trs; done`; \
-	test -n "$$results" || results=/dev/null; \
-	all=`  grep "^$$ws*:test-result:"           $$results | wc -l`; \
-	pass=` grep "^$$ws*:test-result:$$ws*PASS"  $$results | wc -l`; \
-	fail=` grep "^$$ws*:test-result:$$ws*FAIL"  $$results | wc -l`; \
-	skip=` grep "^$$ws*:test-result:$$ws*SKIP"  $$results | wc -l`; \
-	xfail=`grep "^$$ws*:test-result:$$ws*XFAIL" $$results | wc -l`; \
-	xpass=`grep "^$$ws*:test-result:$$ws*XPASS" $$results | wc -l`; \
-	error=`grep "^$$ws*:test-result:$$ws*ERROR" $$results | wc -l`; \
-	if test `expr $$fail + $$xpass + $$error` -eq 0; then \
-	  success=true; \
-	else \
-	  success=false; \
-	fi; \
-	br='==================='; br=$$br$$br$$br$$br; \
-	result_count () \
-	{ \
-	    if test x"$$1" = x"--maybe-color"; then \
-	      maybe_colorize=yes; \
-	    elif test x"$$1" = x"--no-color"; then \
-	      maybe_colorize=no; \
-	    else \
-	      echo "$@: invalid 'result_count' usage" >&2; exit 4; \
-	    fi; \
-	    shift; \
-	    desc=$$1 count=$$2; \
-	    if test $$maybe_colorize = yes && test $$count -gt 0; then \
-	      color_start=$$3 color_end=$$std; \
-	    else \
-	      color_start= color_end=; \
-	    fi; \
-	    echo "$${color_start}# $$desc $$count$${color_end}"; \
-	}; \
-	create_testsuite_report () \
-	{ \
-	  result_count $$1 "TOTAL:" $$all   "$$brg"; \
-	  result_count $$1 "PASS: " $$pass  "$$grn"; \
-	  result_count $$1 "SKIP: " $$skip  "$$blu"; \
-	  result_count $$1 "XFAIL:" $$xfail "$$lgn"; \
-	  result_count $$1 "FAIL: " $$fail  "$$red"; \
-	  result_count $$1 "XPASS:" $$xpass "$$red"; \
-	  result_count $$1 "ERROR:" $$error "$$mgn"; \
-	}; \
-	{								\
-	  echo "$(PACKAGE_STRING): $(subdir)/$(TEST_SUITE_LOG)" |	\
-	    $(am__rst_title);						\
-	  create_testsuite_report --no-color;				\
-	  echo;								\
-	  echo ".. contents:: :depth: 2";				\
-	  echo;								\
-	  for b in $$bases; do echo $$b; done				\
-	    | $(am__create_global_log);					\
-	} >$(TEST_SUITE_LOG).tmp || exit 1;				\
-	mv $(TEST_SUITE_LOG).tmp $(TEST_SUITE_LOG);			\
-	if $$success; then						\
-	  col="$$grn";							\
-	 else								\
-	  col="$$red";							\
-	  test x"$$VERBOSE" = x || cat $(TEST_SUITE_LOG);		\
-	fi;								\
-	echo "$${col}$$br$${std}"; 					\
-	echo "$${col}Testsuite summary"$(AM_TESTSUITE_SUMMARY_HEADER)"$${std}";	\
-	echo "$${col}$$br$${std}"; 					\
-	create_testsuite_report --maybe-color;				\
-	echo "$$col$$br$$std";						\
-	if $$success; then :; else					\
-	  echo "$${col}See $(subdir)/$(TEST_SUITE_LOG)$${std}";		\
-	  if test -n "$(PACKAGE_BUGREPORT)"; then			\
-	    echo "$${col}Please report to $(PACKAGE_BUGREPORT)$${std}";	\
-	  fi;								\
-	  echo "$$col$$br$$std";					\
-	fi;								\
-	$$success || exit 1
-
-check-TESTS: 
-	@list='$(RECHECK_LOGS)';           test -z "$$list" || rm -f $$list
-	@list='$(RECHECK_LOGS:.log=.trs)'; test -z "$$list" || rm -f $$list
-	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
-	@set +e; $(am__set_TESTS_bases); \
-	log_list=`for i in $$bases; do echo $$i.log; done`; \
-	trs_list=`for i in $$bases; do echo $$i.trs; done`; \
-	log_list=`echo $$log_list`; trs_list=`echo $$trs_list`; \
-	$(MAKE) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) TEST_LOGS="$$log_list"; \
-	exit $$?;
-recheck: all 
-	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
-	@set +e; $(am__set_TESTS_bases); \
-	bases=`for i in $$bases; do echo $$i; done \
-	         | $(am__list_recheck_tests)` || exit 1; \
-	log_list=`for i in $$bases; do echo $$i.log; done`; \
-	log_list=`echo $$log_list`; \
-	$(MAKE) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) \
-	        am__force_recheck=am--force-recheck \
-	        TEST_LOGS="$$log_list"; \
-	exit $$?
-.sh.log:
-	@p='$<'; \
-	$(am__set_b); \
-	$(am__check_pre) $(SH_LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_SH_LOG_DRIVER_FLAGS) $(SH_LOG_DRIVER_FLAGS) -- $(SH_LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-@am__EXEEXT_TRUE@.sh$(EXEEXT).log:
-@am__EXEEXT_TRUE@	@p='$<'; \
-@am__EXEEXT_TRUE@	$(am__set_b); \
-@am__EXEEXT_TRUE@	$(am__check_pre) $(SH_LOG_DRIVER) --test-name "$$f" \
-@am__EXEEXT_TRUE@	--log-file $$b.log --trs-file $$b.trs \
-@am__EXEEXT_TRUE@	$(am__common_driver_flags) $(AM_SH_LOG_DRIVER_FLAGS) $(SH_LOG_DRIVER_FLAGS) -- $(SH_LOG_COMPILE) \
-@am__EXEEXT_TRUE@	"$$tst" $(AM_TESTS_FD_REDIRECT)
 distdir: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) distdir-am
 
@@ -1102,7 +776,6 @@ distcleancheck: distclean
 	       $(distcleancheck_listfiles) ; \
 	       exit 1; } >&2
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile $(PROGRAMS) $(SCRIPTS)
 installdirs:
@@ -1129,9 +802,6 @@ install-strip:
 	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
 	fi
 mostlyclean-generic:
-	-test -z "$(TEST_LOGS)" || rm -f $(TEST_LOGS)
-	-test -z "$(TEST_LOGS:.log=.trs)" || rm -f $(TEST_LOGS:.log=.trs)
-	-test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
 
 clean-generic:
 	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
@@ -1219,26 +889,25 @@ ps-am:
 uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
-.MAKE: check-am install-am install-exec-am install-strip uninstall-am
+.MAKE: install-am install-exec-am install-strip uninstall-am
 
 .PHONY: CTAGS GTAGS TAGS all all-am am--depfiles am--refresh check \
-	check-TESTS check-am clean clean-binPROGRAMS clean-cscope \
-	clean-generic cscope cscopelist-am ctags ctags-am dist \
-	dist-all dist-bzip2 dist-gzip dist-lzip dist-shar dist-tarZ \
-	dist-xz dist-zip dist-zstd distcheck distclean \
-	distclean-compile distclean-generic distclean-hdr \
-	distclean-tags distcleancheck distdir distuninstallcheck dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-binPROGRAMS install-binSCRIPTS install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-exec-hook install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am recheck tags tags-am \
-	uninstall uninstall-am uninstall-binPROGRAMS \
-	uninstall-binSCRIPTS uninstall-hook
+	check-am clean clean-binPROGRAMS clean-cscope clean-generic \
+	cscope cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
+	dist-gzip dist-lzip dist-shar dist-tarZ dist-xz dist-zip \
+	dist-zstd distcheck distclean distclean-compile \
+	distclean-generic distclean-hdr distclean-tags distcleancheck \
+	distdir distuninstallcheck dvi dvi-am html html-am info \
+	info-am install install-am install-binPROGRAMS \
+	install-binSCRIPTS install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-exec-hook \
+	install-html install-html-am install-info install-info-am \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
+	ps ps-am tags tags-am uninstall uninstall-am \
+	uninstall-binPROGRAMS uninstall-binSCRIPTS uninstall-hook
 
 .PRECIOUS: Makefile
 

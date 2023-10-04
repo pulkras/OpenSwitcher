@@ -8,10 +8,11 @@ openswitcher_LDADD = $(DEPS_LIBS)
 bin_SCRIPTS = scripts/openswitcher.sh
 EXTRA_DIST = scripts/openswitcher.sh.in
 
+bin_SCRIPTS += scripts/switchLayout.sh
+EXTRA_DIST += scripts/switchLayout.sh.in
+
 CLEANFILES = $(bin_SCRIPTS)
 
-TESTS = tests/checkpkgs.sh
-TESTS += tests/checkfiles.sh
 TEST_EXTENSIONS = .sh
 
 

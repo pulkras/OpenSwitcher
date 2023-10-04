@@ -1,5 +1,4 @@
  - [x] Create function for transforming utf8 -> keysym
- - [ ] Create function that delete selected text of current focused window (may be realese through sending events DEL)
  - [x]  Create function that print keycodes events (print processed text)
  - [x] Replace check_combination to using util may be gnome or kde
  - [x] Replase getSelectedText to xsel util
@@ -8,5 +7,7 @@
  - [x] using autotools for assemblel packeges
  - [ ] add docs information
  - [x] need to fix bug when using combination keys. The command dont run immidiatly.
- - [ ] add autoswitch to another language
+ - [x] add autoswitch to another language on KDE
  - [ ] use Dbus to emulate change keyboard layouts
+ - [ ] add when instal autorun xbindkeys if nessecary
+ - [ ] add autoswitch to another language on Glib
