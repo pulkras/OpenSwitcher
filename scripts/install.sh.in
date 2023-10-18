@@ -79,7 +79,7 @@ fi
 
 echo "Запуск actkbd"
 # Запуск actkbd
-sudo actkbd&
+sudo actkbd --config "$XDG_CONFIG_HOME/actkbd/actkbd.conf"  &
 
 
 echo "Установка завершена."
