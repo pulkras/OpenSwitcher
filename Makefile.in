@@ -101,10 +101,10 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
-CONFIG_CLEAN_FILES = include/header.sh scripts/install.sh \
+CONFIG_CLEAN_FILES = scripts/header.sh scripts/install.sh \
 	scripts/installpkgs.sh scripts/installfiles.sh \
 	scripts/uninstall.sh scripts/openswitcher.sh \
-	scripts/switchLayout.sh
+	scripts/input-device-info.sh
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
@@ -203,12 +203,12 @@ am__define_uniq_tagged_files = \
 AM_RECURSIVE_TARGETS = cscope
 am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(top_srcdir)/include/config.h.in \
-	$(top_srcdir)/include/header.sh.in \
+	$(top_srcdir)/scripts/header.sh.in \
+	$(top_srcdir)/scripts/input-device-info.sh.in \
 	$(top_srcdir)/scripts/install.sh.in \
 	$(top_srcdir)/scripts/installfiles.sh.in \
 	$(top_srcdir)/scripts/installpkgs.sh.in \
 	$(top_srcdir)/scripts/openswitcher.sh.in \
-	$(top_srcdir)/scripts/switchLayout.sh.in \
 	$(top_srcdir)/scripts/uninstall.sh.in AUTHORS COPYING \
 	ChangeLog INSTALL NEWS README.md compile config.guess \
 	config.sub depcomp install-sh missing
@@ -340,8 +340,8 @@ top_srcdir = @top_srcdir@
 openswitcher_SOURCES = src/main.c
 openswitcher_CFLAGS = $(DEPS_CFLAGS)
 openswitcher_LDADD = $(DEPS_LIBS)
-bin_SCRIPTS = scripts/openswitcher.sh scripts/switchLayout.sh
-EXTRA_DIST = scripts/openswitcher.sh.in scripts/switchLayout.sh.in
+bin_SCRIPTS = scripts/openswitcher.sh
+EXTRA_DIST = scripts/openswitcher.sh.in
 CLEANFILES = $(bin_SCRIPTS)
 TEST_EXTENSIONS = .sh
 all: all-am
@@ -396,7 +396,7 @@ $(top_srcdir)/include/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f include/config.h include/stamp-h1
-include/header.sh: $(top_builddir)/config.status $(top_srcdir)/include/header.sh.in
+scripts/header.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/header.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 scripts/install.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/install.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
@@ -408,7 +408,7 @@ scripts/uninstall.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/uninst
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 scripts/openswitcher.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/openswitcher.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-scripts/switchLayout.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/switchLayout.sh.in
+scripts/input-device-info.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/input-device-info.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)

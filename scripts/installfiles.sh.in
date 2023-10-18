@@ -3,18 +3,19 @@
 add_standart_combination() 
 {
     if [ "$1" -eq 1 ]; then
-        if ! grep -q "$defaultCombination" "$file"; then
+        if ! grep -q "$default_combination" "$file"; then
 			echo "Установка стандартной комбинации клавиш для запуска."
-			echo "$defaultCombination" >> "$HOME_USER/.xbindkeysrc"
+			echo "$default_combination" >> "$file"
 			echo "Установите необходимую вам конфигурацию запуска"
         else
             echo "Стандартная комбинация клавиш найдена"
         fi
     else
 		echo "Установка стандартного файла $file"
-		xbindkeys --defaults > "$file"
+		mkdir "$XDG_CONFIG_HOME/actkbd"
+		touch "$file"
 		echo "Установка стандартной комбинации клавиш для запуска."
-		echo "$defaultCombination" >> "$HOME_USER/.xbindkeysrc"
+		echo "$default_combination" >> "$file"
 		echo "Установите необходимую вам конфигурацию запуска"
     fi
     
@@ -23,41 +24,44 @@ add_standart_combination()
 add_standart_autostart()
 {   
     if [ "$1" -eq 1 ]; then
-        if ! grep -q "$default_autostart_xbindkeys" "$file"; then
+        if ! grep -q "$default_autostart_actkbd" "$file"; then
 			echo "Установка стандартного автостарта."
-			echo "$default_autostart_xbindkeys" >> "$HOME_USER"/.xinitrc
+			echo "$default_autostart_actkbd" >> "$file"
         else
             echo "Стандартный автостарт найден"
         fi
     else
-		echo "Копирование стандартного /etc/X11/xinit/xinitrc в $HOME_USER/.xinitrc."
-		cp /etc/X11/xinit/xinitrc "$HOME_USER"/.xinitrc
+		echo "Копирование стандартного /etc/X11/xinit/xinitrc в $file."
+		cp /etc/X11/xinit/xinitrc "$file"
 		echo "Установка стандартного автостарта."
-		echo "$default_autostart_xbindkeys" >> "$HOME_USER"/.xinitrc
+		echo "$default_autostart_actkbd" >> "$file"
     fi
     
 }
 
 # Check requested files
 for file in "${required_files[@]}"; do
-    if [ ! -f "$file" ]; then
-        echo "Файл $file не найден."
 
-        if [ "$file" = "$HOME_USER/.xbindkeysrc" ]; then
-            add_standart_combination 0
-        elif [ "$file" = "$HOME_USER/.xinitrc" ]; then
-            add_standart_autostart 0
-        fi
-    else
-        echo "Файл $file найден."
+	if [ "$file" = "$XDG_CONFIG_HOME/actkbd/actkbd.conf" ]; then
+		if [ ! -f "$file" ]; then
+			echo "Файл $file не найден."
+			add_standart_combination 0
+		else
+			echo "Файл $file найден."
+			add_standart_combination 1
+		fi
 
-        if [ "$file" = "$HOME_USER/.xbindkeysrc" ]; then
-            add_standart_combination 1
-        elif [ "$file" = "$HOME_USER/.xinitrc" ]; then
-            add_standart_autostart 1
-        fi
-       
-    fi
+	elif [ "$file" = "$HOME_USER/.xinitrc" ]; then
+		if [ ! -f "$file" ]; then
+			echo "Файл $file не найден."
+			add_standart_autostart 0
+		else
+			echo "Файл $file найден."
+			add_standart_autostart 1
+		fi
+	
+	fi
+
 done
 
 echo "Проверка завершена.

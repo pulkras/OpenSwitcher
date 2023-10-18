@@ -5854,7 +5854,7 @@ then :
 fi
 
 
-ac_config_files="$ac_config_files include/header.sh"
+ac_config_files="$ac_config_files scripts/header.sh"
 
 ac_config_files="$ac_config_files scripts/install.sh"
 
@@ -5866,7 +5866,7 @@ ac_config_files="$ac_config_files scripts/uninstall.sh"
 
 ac_config_files="$ac_config_files scripts/openswitcher.sh"
 
-ac_config_files="$ac_config_files scripts/switchLayout.sh"
+ac_config_files="$ac_config_files scripts/input-device-info.sh"
 
 
 ac_config_files="$ac_config_files Makefile"
@@ -6593,13 +6593,13 @@ do
   case $ac_config_target in
     "include/config.h") CONFIG_HEADERS="$CONFIG_HEADERS include/config.h" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
-    "include/header.sh") CONFIG_FILES="$CONFIG_FILES include/header.sh" ;;
+    "scripts/header.sh") CONFIG_FILES="$CONFIG_FILES scripts/header.sh" ;;
     "scripts/install.sh") CONFIG_FILES="$CONFIG_FILES scripts/install.sh" ;;
     "scripts/installpkgs.sh") CONFIG_FILES="$CONFIG_FILES scripts/installpkgs.sh" ;;
     "scripts/installfiles.sh") CONFIG_FILES="$CONFIG_FILES scripts/installfiles.sh" ;;
     "scripts/uninstall.sh") CONFIG_FILES="$CONFIG_FILES scripts/uninstall.sh" ;;
     "scripts/openswitcher.sh") CONFIG_FILES="$CONFIG_FILES scripts/openswitcher.sh" ;;
-    "scripts/switchLayout.sh") CONFIG_FILES="$CONFIG_FILES scripts/switchLayout.sh" ;;
+    "scripts/input-device-info.sh") CONFIG_FILES="$CONFIG_FILES scripts/input-device-info.sh" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
@@ -7292,13 +7292,13 @@ See \`config.log' for more details" "$LINENO" 5; }
   rm -f conftest-deps.mk
 }
  ;;
-    "include/header.sh":F) chmod +x include/header.sh ;;
+    "scripts/header.sh":F) chmod +x scripts/header.sh ;;
     "scripts/install.sh":F) chmod +x scripts/install.sh ;;
     "scripts/installpkgs.sh":F) chmod +x scripts/installpkgs.sh ;;
     "scripts/installfiles.sh":F) chmod +x scripts/installfiles.sh ;;
     "scripts/uninstall.sh":F) chmod +x scripts/uninstall.sh ;;
     "scripts/openswitcher.sh":F) chmod +x scripts/openswitcher.sh ;;
-    "scripts/switchLayout.sh":F) chmod +x scripts/switchLayout.sh ;;
+    "scripts/input-device-info.sh":F) chmod +x scripts/input-device-info.sh ;;
 
   esac
 done # for ac_tag

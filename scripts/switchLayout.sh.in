@@ -1,4 +1,0 @@
-#!/bin/bash
-
-# For KDE
-qdbus org.kde.keyboard /Layouts org.kde.KeyboardLayouts.switchToNextLayout

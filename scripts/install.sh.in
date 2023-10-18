@@ -1,13 +1,14 @@
 #!/bin/bash
 
 my_dir="$(dirname "$0")"
-source "$my_dir/../include/header.sh"
-source "$my_dir/installpkgs.sh"
+source "$my_dir/header.sh"
+# source "$my_dir/installpkgs.sh"
 source "$my_dir/installfiles.sh"
 
 
+# add rule to sudoers
 if [ ! -f "$sudoerspath" ]; then
-	echo "Добавляется правило для корректной работы OPenSwitcher в $sudoerspath:"
+	echo "Добавляется правило для корректной работы OpenSwitcher в $sudoerspath:"
 	echo "$rule"
 	sudo touch $sudoerspath
 	echo "$rule" | sudo tee $sudoerspath > /dev/null
@@ -36,5 +37,49 @@ else
 	fi
 	
 fi
+
+# install xkb-switch
+echo "Устанока xkb-switch"
+if which cmake >/dev/null; then
+	echo "cmake найден"
+	echo "Установка xkb-switch"
+	cd xkb-switch/
+	mkdir build 
+	cd build
+	cmake ..
+	make
+	sudo make install
+	sudo ldconfig
+	cd ..
+	cd ..
+else
+	echo "cmake не найден"
+	exit 1
+fi
+
+# install actkbd
+echo "Устанока actkbd"
+if sudo modprobe evdev >/dev/null; then
+	cd actkbd/
+	echo "evdev найден"
+	make
+	sudo make install
+	cd ../
+else
+	echo "evdev не найден"
+	exit 1
+fi
+
+# Проверка, запущен ли уже actkbd
+if pgrep actkbd >/dev/null; then
+	echo "Перезапуск actkbd"
+    # actkbd уже запущен, остановка процесса
+    killall actkbd
+fi
+
+echo "Запуск actkbd"
+# Запуск actkbd
+sudo actkbd&
+
 
 echo "Установка завершена."

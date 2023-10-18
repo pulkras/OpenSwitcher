@@ -8,6 +8,5 @@
  - [ ] add docs information
  - [x] need to fix bug when using combination keys. The command dont run immidiatly.
  - [x] add autoswitch to another language on KDE
- - [ ] use Dbus to emulate change keyboard layouts
- - [ ] add when instal autorun xbindkeys if nessecary
- - [ ] add autoswitch to another language on Glib
+ - [x] add when instal autorun xbindkeys if nessecary
+ - [x] add autoswitch to another language on Glib

@@ -22,7 +22,7 @@
 5. `make`
 6. `sudo make install`
 
-# Run in terminal
+# Run
 
 1. Select the text
 2. Press default Ctr+Alt_L combination
