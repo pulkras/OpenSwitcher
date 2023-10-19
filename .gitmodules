@@ -1,0 +1,6 @@
+[submodule "actkbd"]
+	path = actkbd
+	url = https://github.com/thkala/actkbd
+[submodule "xkb-switch"]
+	path = xkb-switch
+	url = https://github.com/grwlf/xkb-switch
