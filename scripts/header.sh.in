@@ -31,6 +31,6 @@ default_combination="# Activate OpenSwitcher
 29+56:::openswitcher.sh"
 
 # Requested packages 
-required_packages=("build-essential" "xserver-xorg" "xbindkeys" "libx11-dev" "x11-utils" "libxkbcommon-x11-dev" "libxkbcommon-dev" "libicu-dev")
+required_packages=("build-essential" "xserver-xorg" "libx11-dev" "x11-utils" "libxkbcommon-x11-dev" "libxkbcommon-dev" "libicu-dev")
 
 distro=$(cat /etc/os-release | grep -w ID | cut -d'=' -f2)

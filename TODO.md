@@ -10,3 +10,6 @@
  - [x] add autoswitch to another language on KDE
  - [x] add when instal autorun xbindkeys if nessecary
  - [x] add autoswitch to another language on Glib
+ - [ ] add man page
+ - [ ] add tests
+ - [ ] add options
