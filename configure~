@@ -5866,7 +5866,7 @@ ac_config_files="$ac_config_files scripts/uninstall.sh"
 
 ac_config_files="$ac_config_files scripts/openswitcher.sh"
 
-ac_config_files="$ac_config_files scripts/switchLayout.sh"
+ac_config_files="$ac_config_files scripts/input-device-info.sh"
 
 
 ac_config_files="$ac_config_files Makefile"
@@ -6599,7 +6599,7 @@ do
     "scripts/installfiles.sh") CONFIG_FILES="$CONFIG_FILES scripts/installfiles.sh" ;;
     "scripts/uninstall.sh") CONFIG_FILES="$CONFIG_FILES scripts/uninstall.sh" ;;
     "scripts/openswitcher.sh") CONFIG_FILES="$CONFIG_FILES scripts/openswitcher.sh" ;;
-    "scripts/switchLayout.sh") CONFIG_FILES="$CONFIG_FILES scripts/switchLayout.sh" ;;
+    "scripts/input-device-info.sh") CONFIG_FILES="$CONFIG_FILES scripts/input-device-info.sh" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
@@ -7298,7 +7298,7 @@ See \`config.log' for more details" "$LINENO" 5; }
     "scripts/installfiles.sh":F) chmod +x scripts/installfiles.sh ;;
     "scripts/uninstall.sh":F) chmod +x scripts/uninstall.sh ;;
     "scripts/openswitcher.sh":F) chmod +x scripts/openswitcher.sh ;;
-    "scripts/switchLayout.sh":F) chmod +x scripts/switchLayout.sh ;;
+    "scripts/input-device-info.sh":F) chmod +x scripts/input-device-info.sh ;;
 
   esac
 done # for ac_tag

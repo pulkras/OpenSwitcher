@@ -20,12 +20,23 @@ sudo rm /usr/local/lib/libxkbswitch.so.2.0.1
 sudo rm /usr/local/lib/libxkbswitch.so.2
 sudo rm /usr/local/lib/libxkbswitch.so
 sudo rm /usr/local/share/man/man1/xkb-switch.1.gz
-
-echo "Удалние actkbd"
-cd actkbd
-sudo make uninstall
+cd xkb-switch
 make clean
 cd ..
+
+
+prefix="/usr/local"
+sbindir="$prefix/sbin"
+sysconfdir="/etc"
+
+echo "Удалние actkbd"
+sudo rm -f "$sbindir/actkbd"
+sudo rm -f "$sysconfdir/actkbd.conf"
+cd actkbd
+make clean
+cd ..
+
+
 
 echo "Отсановка actkbd"
 killall actkbd
