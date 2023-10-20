@@ -10,7 +10,7 @@ EXTRA_DIST = scripts/openswitcher.sh.in
 
 CLEANFILES = $(bin_SCRIPTS)
 
-TEST_EXTENSIONS = .sh
+dist_man1_MANS = doc/openswitcher.1
 
 
 install-exec-hook: $(bin_PROGRAMS)

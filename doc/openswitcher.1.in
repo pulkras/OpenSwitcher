@@ -1,0 +1,119 @@
+.\" NAME
+.\"
+.\" myapp - Utility for performing tasks
+.\"
+.TH OPENSWITCHER 1 "@TODAY@" "version @VERSION@" OPENSWITCHER
+
+.SH NAME
+\fBopenswitcher\fR - Utility for switching layout selected text
+
+.SH SYNOPSIS
+.B openswitcher
+[\fIOPTIONS\fR]
+\fIparameters\fR
+
+.SH DESCRIPTION
+\fBopenswitcher\fR - is a main program of OpenSwitcher project that takes selected text in input and transform it to sequence of keystrokes and emulates it.
+
+.SH OPTIONS
+.TP
+\fB-h\fP, \fB--help\fP
+Show help information
+
+.TP
+\fB-v\fP, \fB--version\fP
+Show version
+
+.TP
+\fB-d, --debug\fR
+Enable debug mode for outputting additional information.
+
+.SH EXIT STATUS
+\fBopenswitcher\fR returns the following status values:
+.TP
+\fB0\fR
+Successful termination of the application.
+.TP
+\fB1\fR
+General application error.
+
+.SH FILES
+\fBopenswitcher\fR works with configs:
+.PP
+$\fBXDG_CONFIG_HOME\fR/actkbd/actkbd.conf - is a config for \fIactkbd\fR programm.
+.PP
+It is configure keys combination to run \fIopenswitcher.sh\fR default \fBCtr_L+Alt_L\fR
+.PP
+To configure this file use syntax of \fIactkbd\fR described in 
+.B https://github.com/thkala/actkbd
+.PP
+$\fBHOME_USER\fR/.xinitrc - is a config that X11 use when startup.
+.PP
+Need to automaticaly startup actkbd
+
+.SH ENVIRONMENT
+\fBopenswitcher\fR currently working only on X11 Window System
+
+.SH VERSION
+\fBopenswitcher\fR version @VERSION@
+
+.SH STANDARDS
+\fBopenswitcher\fR complies with POSIX standards.
+
+.SH HISTORY
+Introduced in version 1.0.
+
+.SH NOTES
+.B openswitcher
+use these programs:
+
+.I actkbd
+.I xsel
+.I xkb-switch
+
+Attention! This application is currently under development and may have some limitations or errors.
+
+.SH BUGS
+.PP
+Send bugs to
+.BR https://github.com/pulkras/OpenSwitcher/tree/test
+or email
+
+.SH EXAMPLES
+.PP
+.I Run openswitcher in a terminal:
+.TP
+1. Select the text
+.TP
+2. \fBxsel | sudo openswitcher\fR
+
+.PP
+.I Run openswitcher in a grafical environment:
+.TP
+1. Select the text
+.TP
+2. Press default \fBCtr_L+Alt_L\fR shortcut
+
+.SH AUTHORS
+Authors: Frolov Ruslan <gald.rus@yandex.ru>
+
+.SH COPYRIGHT
+Copyright (c) 2022, Your Company. All rights reserved.
+
+.SH SEE ALSO
+Additional information can be found in the user manual or on the \fBopenswitcher\fR website.
+
+To view the \fBxsel\fR man page, use the following command:
+.BR man
+xsel 
+
+To visit the official website of \fBxsel\fR, go to:
+.BR https://github.com/kfish/xsel 
+
+To visit the official website of \fBactkbd\fR, go to:
+.BR https://github.com/thkala/actkbd
+
+To visit the official website of \fBxkb-switch\fR, go to:
+.BR https://github.com/grwlf/xkb-switch
+
+For more information on using \fBxsel\fR and its capabilities, refer to the user manual or documentation that accompanies the utility.

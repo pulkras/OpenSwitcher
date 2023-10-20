@@ -6,6 +6,7 @@ AC_ARG_WITH([x], [AS_HELP_STRING([--with-x=yes], [Enable feature X])])
 AC_INIT([OpenSwitcher],[0.9.0],[gald.rus@yandex.ru])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 AC_CONFIG_HEADERS([include/config.h])
+AC_SUBST([TODAY], [$(shell date +%Y-%m-%d)])
 
 # Checks for programs.
 AC_PROG_CC
@@ -42,6 +43,7 @@ AC_CONFIG_FILES([scripts/installfiles.sh], [chmod +x scripts/installfiles.sh])
 AC_CONFIG_FILES([scripts/uninstall.sh], [chmod +x scripts/uninstall.sh])
 AC_CONFIG_FILES([scripts/openswitcher.sh], [chmod +x scripts/openswitcher.sh])
 AC_CONFIG_FILES([scripts/input-device-info.sh], [chmod +x scripts/input-device-info.sh])
+AC_CONFIG_FILES([doc/openswitcher.1])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

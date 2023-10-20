@@ -686,6 +686,7 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
+TODAY
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
@@ -3374,6 +3375,8 @@ fi
 
 ac_config_headers="$ac_config_headers include/config.h"
 
+TODAY=$(shell date +%Y-%m-%d)
+
 
 # Checks for programs.
 
@@ -5868,6 +5871,8 @@ ac_config_files="$ac_config_files scripts/openswitcher.sh"
 
 ac_config_files="$ac_config_files scripts/input-device-info.sh"
 
+ac_config_files="$ac_config_files doc/openswitcher.1"
+
 
 ac_config_files="$ac_config_files Makefile"
 
@@ -6600,6 +6605,7 @@ do
     "scripts/uninstall.sh") CONFIG_FILES="$CONFIG_FILES scripts/uninstall.sh" ;;
     "scripts/openswitcher.sh") CONFIG_FILES="$CONFIG_FILES scripts/openswitcher.sh" ;;
     "scripts/input-device-info.sh") CONFIG_FILES="$CONFIG_FILES scripts/input-device-info.sh" ;;
+    "doc/openswitcher.1") CONFIG_FILES="$CONFIG_FILES doc/openswitcher.1" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;

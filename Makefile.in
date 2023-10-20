@@ -104,9 +104,10 @@ CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES = scripts/header.sh scripts/install.sh \
 	scripts/installpkgs.sh scripts/installfiles.sh \
 	scripts/uninstall.sh scripts/openswitcher.sh \
-	scripts/input-device-info.sh
+	scripts/input-device-info.sh doc/openswitcher.1
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)"
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" \
+	"$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_openswitcher_OBJECTS = src/openswitcher-main.$(OBJEXT)
@@ -183,6 +184,9 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+man1dir = $(mandir)/man1
+NROFF = nroff
+MANS = $(dist_man1_MANS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -201,7 +205,8 @@ am__define_uniq_tagged_files = \
     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
   done | $(am__uniquify_input)`
 AM_RECURSIVE_TARGETS = cscope
-am__DIST_COMMON = $(srcdir)/Makefile.in \
+am__DIST_COMMON = $(dist_man1_MANS) $(srcdir)/Makefile.in \
+	$(top_srcdir)/doc/openswitcher.1.in \
 	$(top_srcdir)/include/config.h.in \
 	$(top_srcdir)/scripts/header.sh.in \
 	$(top_srcdir)/scripts/input-device-info.sh.in \
@@ -284,6 +289,7 @@ RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+TODAY = @TODAY@
 VERSION = @VERSION@
 XMKMF = @XMKMF@
 abs_builddir = @abs_builddir@
@@ -343,7 +349,7 @@ openswitcher_LDADD = $(DEPS_LIBS)
 bin_SCRIPTS = scripts/openswitcher.sh
 EXTRA_DIST = scripts/openswitcher.sh.in
 CLEANFILES = $(bin_SCRIPTS)
-TEST_EXTENSIONS = .sh
+dist_man1_MANS = doc/openswitcher.1
 all: all-am
 
 .SUFFIXES:
@@ -409,6 +415,8 @@ scripts/uninstall.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/uninst
 scripts/openswitcher.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/openswitcher.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 scripts/input-device-info.sh: $(top_builddir)/config.status $(top_srcdir)/scripts/input-device-info.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+doc/openswitcher.1: $(top_builddir)/config.status $(top_srcdir)/doc/openswitcher.1.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
@@ -544,6 +552,47 @@ src/openswitcher-main.obj: src/main.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/main.c' object='src/openswitcher-main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openswitcher_CFLAGS) $(CFLAGS) -c -o src/openswitcher-main.obj `if test -f 'src/main.c'; then $(CYGPATH_W) 'src/main.c'; else $(CYGPATH_W) '$(srcdir)/src/main.c'; fi`
+install-man1: $(dist_man1_MANS)
+	@$(NORMAL_INSTALL)
+	@list1='$(dist_man1_MANS)'; \
+	list2=''; \
+	test -n "$(man1dir)" \
+	  && test -n "`echo $$list1$$list2`" \
+	  || exit 0; \
+	echo " $(MKDIR_P) '$(DESTDIR)$(man1dir)'"; \
+	$(MKDIR_P) "$(DESTDIR)$(man1dir)" || exit 1; \
+	{ for i in $$list1; do echo "$$i"; done;  \
+	if test -n "$$list2"; then \
+	  for i in $$list2; do echo "$$i"; done \
+	    | sed -n '/\.1[a-z]*$$/p'; \
+	fi; \
+	} | while read p; do \
+	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; echo "$$p"; \
+	done | \
+	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
+	sed 'N;N;s,\n, ,g' | { \
+	list=; while read file base inst; do \
+	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
+	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man1dir)/$$inst'"; \
+	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man1dir)/$$inst" || exit $$?; \
+	  fi; \
+	done; \
+	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
+	while read files; do \
+	  test -z "$$files" || { \
+	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man1dir)'"; \
+	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man1dir)" || exit $$?; }; \
+	done; }
+
+uninstall-man1:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_man1_MANS)'; test -n "$(man1dir)" || exit 0; \
+	files=`{ for i in $$list; do echo "$$i"; done; \
+	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
+	dir='$(DESTDIR)$(man1dir)'; $(am__uninstall_files_from_dir)
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -777,9 +826,9 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) $(SCRIPTS)
+all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(MANS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -838,7 +887,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-man
 
 install-dvi: install-dvi-am
 
@@ -855,7 +904,7 @@ install-info: install-info-am
 
 install-info-am:
 
-install-man:
+install-man: install-man1
 
 install-pdf: install-pdf-am
 
@@ -886,9 +935,11 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS
+uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS uninstall-man
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
+uninstall-man: uninstall-man1
+
 .MAKE: install-am install-exec-am install-strip uninstall-am
 
 .PHONY: CTAGS GTAGS TAGS all all-am am--depfiles am--refresh check \
@@ -902,12 +953,13 @@ uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS
 	install-binSCRIPTS install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-exec-hook \
 	install-html install-html-am install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
+	install-man install-man1 install-pdf install-pdf-am install-ps \
 	install-ps-am install-strip installcheck installcheck-am \
 	installdirs maintainer-clean maintainer-clean-generic \
 	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
 	ps ps-am tags tags-am uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-binSCRIPTS uninstall-hook
+	uninstall-binPROGRAMS uninstall-binSCRIPTS uninstall-hook \
+	uninstall-man uninstall-man1
 
 .PRECIOUS: Makefile
 
