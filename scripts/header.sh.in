@@ -5,6 +5,8 @@ sudoerspath=/etc/sudoers.d/openswitcher
 
 if [ ! "$SUDO_USER" == "" ]; then
 	OPENSWITCHERUSER="$SUDO_USER"
+else
+	OPENSWITCHERUSER="$USER"
 fi
 
 HOME_USER=$(eval echo ~$OPENSWITCHERUSER)
