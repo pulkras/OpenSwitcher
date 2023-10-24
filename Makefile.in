@@ -186,7 +186,7 @@ am__can_run_installinfo = \
   esac
 man1dir = $(mandir)/man1
 NROFF = nroff
-MANS = $(dist_man1_MANS)
+MANS = $(man1_MANS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -205,7 +205,7 @@ am__define_uniq_tagged_files = \
     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
   done | $(am__uniquify_input)`
 AM_RECURSIVE_TARGETS = cscope
-am__DIST_COMMON = $(dist_man1_MANS) $(srcdir)/Makefile.in \
+am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(top_srcdir)/doc/openswitcher.1.in \
 	$(top_srcdir)/include/config.h.in \
 	$(top_srcdir)/scripts/header.sh.in \
@@ -347,9 +347,20 @@ openswitcher_SOURCES = src/main.c
 openswitcher_CFLAGS = $(DEPS_CFLAGS)
 openswitcher_LDADD = $(DEPS_LIBS)
 bin_SCRIPTS = scripts/openswitcher.sh
-EXTRA_DIST = scripts/openswitcher.sh.in
+EXTRA_DIST = scripts/openswitcher.sh.in xkb-switch/.gitignore \
+	xkb-switch/.vimrc_local.vim xkb-switch/CMakeLists.txt \
+	xkb-switch/COPYING xkb-switch/default.nix \
+	xkb-switch/localrc.vim xkb-switch/README.md xkb-switch/test.sh \
+	xkb-switch/xkb-group.sh xkb-switch/man/xkb-switch.1 \
+	xkb-switch/src/Utils.hpp xkb-switch/src/XKbSwitch.cpp \
+	xkb-switch/src/XKbSwitchApi.cpp xkb-switch/src/XKeyboard.cpp \
+	xkb-switch/src/XKeyboard.hpp actkbd/actkbd.c actkbd/actkbd.h \
+	actkbd/AUTHORS actkbd/ChangeLog actkbd/config.c actkbd/COPYING \
+	actkbd/FAQ actkbd/linux.c actkbd/Makefile actkbd/mask.c \
+	actkbd/NEWS actkbd/README actkbd/TODO \
+	actkbd/samples/actkbd.conf actkbd/samples/udev.rules
 CLEANFILES = $(bin_SCRIPTS)
-dist_man1_MANS = doc/openswitcher.1
+man1_MANS = doc/openswitcher.1
 all: all-am
 
 .SUFFIXES:
@@ -552,9 +563,9 @@ src/openswitcher-main.obj: src/main.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/main.c' object='src/openswitcher-main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(openswitcher_CFLAGS) $(CFLAGS) -c -o src/openswitcher-main.obj `if test -f 'src/main.c'; then $(CYGPATH_W) 'src/main.c'; else $(CYGPATH_W) '$(srcdir)/src/main.c'; fi`
-install-man1: $(dist_man1_MANS)
+install-man1: $(man1_MANS)
 	@$(NORMAL_INSTALL)
-	@list1='$(dist_man1_MANS)'; \
+	@list1='$(man1_MANS)'; \
 	list2=''; \
 	test -n "$(man1dir)" \
 	  && test -n "`echo $$list1$$list2`" \
@@ -588,7 +599,7 @@ install-man1: $(dist_man1_MANS)
 
 uninstall-man1:
 	@$(NORMAL_UNINSTALL)
-	@list='$(dist_man1_MANS)'; test -n "$(man1dir)" || exit 0; \
+	@list='$(man1_MANS)'; test -n "$(man1dir)" || exit 0; \
 	files=`{ for i in $$list; do echo "$$i"; done; \
 	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
 	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \

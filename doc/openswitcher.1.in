@@ -5,7 +5,7 @@
 .TH OPENSWITCHER 1 "@TODAY@" "version @VERSION@" OPENSWITCHER
 
 .SH NAME
-\fBopenswitcher\fR - Utility for switching layout selected text
+\fBopenswitcher\fR - Utility for switching layout of currently selected text
 
 .SH SYNOPSIS
 .B openswitcher
