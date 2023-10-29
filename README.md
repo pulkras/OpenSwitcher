@@ -22,17 +22,21 @@
 5. `make`
 6. `sudo make install OPENSWITCHER_INSTALL=1`
 
+## Make .deb package
+
+1. `./configure`
+2. `make deb`
+
 # Run
 
 1. Select the text
-2. Press default Ctr+Alt_L combination
+2. Press default Ctr_L+Alt_L combination
 3. Voila ! :)
 
 # Run in terminal
 
 1. **Select the text**
-
-2.  `xsel | sudo openswitcher`
+2.  `xkb-switch -n && xsel | sudo openswitcher`
 
 # Docs generating
 

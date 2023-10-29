@@ -87,7 +87,7 @@ fi
 
 echo "Запуск actkbd"
 # Запуск actkbd
-echo "sudo actkbd --config $XDG_CONFIG_HOME/actkbd/actkbd.conf  &"
+echo "sudo actkbd --daemon --config $XDG_CONFIG_HOME/actkbd/actkbd.conf  &"
 sudo actkbd --daemon --config "$XDG_CONFIG_HOME/actkbd/actkbd.conf"  &
 
 

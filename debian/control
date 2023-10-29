@@ -1,16 +1,15 @@
 Source: openswitcher
-Section: unknown
+Section: utils
 Priority: optional
 Maintainer: Ruslan Frolov Victorovich <gald.rus@yandex.ru>
 Rules-Requires-Root: no
 Build-Depends:
  debhelper-compat (= 13),
  autotools-dev,
- cmake,
- build-essential, 
+ cmake, 
  xserver-xorg, libx11-dev, libxkbcommon-x11-dev, libxkbcommon-dev, libicu-dev
 Standards-Version: 4.6.2
-Homepage: <insert the upstream URL, if relevant>
+Homepage: https://github.com/pulkras/OpenSwitcher/tree/test
 #Vcs-Browser: https://salsa.debian.org/debian/openswitcher
 #Vcs-Git: https://salsa.debian.org/debian/openswitcher.git
 
@@ -20,5 +19,5 @@ Depends:
  ${shlibs:Depends},
  ${misc:Depends},
  xsel
-Description: <insert up to 60 chars description>
- <Insert long description, indented with spaces.>
+Description: Utility for switching layout of currently selected text
+ openswitcher - is a main program of OpenSwitcher project that takes selected text in input and transform it to sequence of keystrokes and emulates it.

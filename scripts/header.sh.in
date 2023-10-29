@@ -28,7 +28,7 @@ $OPENSWITCHERUSER ALL = (root) NOPASSWD: $programpath
 # Requested files, can be configured yourself
 required_files=("$XDG_CONFIG_HOME/actkbd/actkbd.conf" "$HOME_USER/.xinitrc")
 
-default_autostart_actkbd="actkbd&"
+default_autostart_actkbd="sudo actkbd --daemon --config $XDG_CONFIG_HOME/actkbd/actkbd.conf  &"
 
 # Activate OpenSwitcher using ctr+alt
 default_combination="# Activate OpenSwitcher
