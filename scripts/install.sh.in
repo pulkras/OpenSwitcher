@@ -1,9 +1,13 @@
 #!/bin/bash
 
-my_dir="$(dirname "$0")"
-source "$my_dir/header.sh"
-# source "$my_dir/installpkgs.sh"
-source "$my_dir/installfiles.sh"
+if [[ $OPENSWITCHER_INSTALL_WITH_DPKG == 1 ]]; then
+	source "/usr/lib/openswitcher/scripts/header.sh"
+	source "/usr/lib/openswitcher/scripts/installfiles.sh"
+else
+	source "scripts/header.sh"
+	source "scripts/installfiles.sh"
+fi
+
 
 
 # add rule to sudoers
@@ -38,37 +42,41 @@ else
 	
 fi
 
-# install xkb-switch
-echo "Устанока xkb-switch"
-if which cmake >/dev/null; then
-	echo "cmake найден"
-	echo "Установка xkb-switch"
-	cd xkb-switch/
-	mkdir build 
-	cd build
-	cmake ..
-	make
-	sudo make install
-	sudo ldconfig
-	cd ..
-	cd ..
-else
-	echo "cmake не найден"
-	exit 1
+if [[ $OPENSWITCHER_INSTALL_WITH_DPKG != 1 ]]; then
+	# install xkb-switch
+	echo "Устанока xkb-switch"
+	if which cmake >/dev/null; then
+		echo "cmake найден"
+		echo "Установка xkb-switch"
+		cd xkb-switch/
+		mkdir build 
+		cd build
+		cmake ..
+		make
+		sudo make install
+		sudo ldconfig
+		cd ..
+		cd ..
+	else
+		echo "cmake не найден"
+		exit 1
+	fi
+
+	# install actkbd
+	echo "Устанока actkbd"
+	if sudo modprobe evdev >/dev/null; then
+		cd actkbd/
+		echo "evdev найден"
+		make
+		sudo make install
+		cd ../
+	else
+		echo "evdev не найден"
+		exit 1
+	fi
 fi
 
-# install actkbd
-echo "Устанока actkbd"
-if sudo modprobe evdev >/dev/null; then
-	cd actkbd/
-	echo "evdev найден"
-	make
-	sudo make install
-	cd ../
-else
-	echo "evdev не найден"
-	exit 1
-fi
+
 
 # Проверка, запущен ли уже actkbd
 if pgrep actkbd >/dev/null; then
@@ -79,7 +87,8 @@ fi
 
 echo "Запуск actkbd"
 # Запуск actkbd
-sudo actkbd --config "$XDG_CONFIG_HOME/actkbd/actkbd.conf"  &
+echo "sudo actkbd --config $XDG_CONFIG_HOME/actkbd/actkbd.conf  &"
+sudo actkbd --daemon --config "$XDG_CONFIG_HOME/actkbd/actkbd.conf"  &
 
 
 echo "Установка завершена."

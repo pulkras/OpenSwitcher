@@ -1,0 +1,5 @@
+openswitcher (0.9.0-1) UNRELEASED; urgency=medium
+
+  * Initial release. (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Ruslan Frolov Victorovich <ruslan@unknown>  Fri, 27 Oct 2023 00:51:49 +0300

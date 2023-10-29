@@ -1,6 +1,11 @@
 #!/bin/bash
 
-programpath=/usr/local/bin/openswitcher
+if [[ $OPENSWITCHER_INSTALL_WITH_DPKG == 1 ]]; then
+	programpath=/usr/bin/openswitcher
+else
+	programpath=/usr/local/bin/openswitcher
+fi
+
 sudoerspath=/etc/sudoers.d/openswitcher
 
 if [ ! "$SUDO_USER" == "" ]; then
@@ -9,10 +14,10 @@ else
 	OPENSWITCHERUSER="$USER"
 fi
 
-HOME_USER=$(eval echo ~$OPENSWITCHERUSER)
+HOME_USER=$(eval echo "~$OPENSWITCHERUSER")
 
 if [ "$XDG_CONFIG_HOME" == "" ]; then
-	XDG_CONFIG_HOME="$HOME_USER/.config"
+	export XDG_CONFIG_HOME="$HOME_USER/.config"
 fi
 
 rule="
@@ -33,6 +38,6 @@ default_combination="# Activate OpenSwitcher
 29+56:::openswitcher.sh"
 
 # Requested packages 
-required_packages=("build-essential" "xserver-xorg" "libx11-dev" "x11-utils" "libxkbcommon-x11-dev" "libxkbcommon-dev" "libicu-dev")
+required_packages=("build-essential" "xserver-xorg" "libx11-dev" "libxkbcommon-x11-dev" "libxkbcommon-dev" "libicu-dev" "xsel")
 
 distro=$(cat /etc/os-release | grep -w ID | cut -d'=' -f2)

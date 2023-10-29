@@ -290,7 +290,7 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 TODAY = @TODAY@
-VERSION = @VERSION@
+VERSION = @PACKAGE_VERSION@
 XMKMF = @XMKMF@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -343,22 +343,12 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+OPENSWITCHER_INSTALL = 0
 openswitcher_SOURCES = src/main.c
 openswitcher_CFLAGS = $(DEPS_CFLAGS)
 openswitcher_LDADD = $(DEPS_LIBS)
 bin_SCRIPTS = scripts/openswitcher.sh
-EXTRA_DIST = scripts/openswitcher.sh.in xkb-switch/.gitignore \
-	xkb-switch/.vimrc_local.vim xkb-switch/CMakeLists.txt \
-	xkb-switch/COPYING xkb-switch/default.nix \
-	xkb-switch/localrc.vim xkb-switch/README.md xkb-switch/test.sh \
-	xkb-switch/xkb-group.sh xkb-switch/man/xkb-switch.1 \
-	xkb-switch/src/Utils.hpp xkb-switch/src/XKbSwitch.cpp \
-	xkb-switch/src/XKbSwitchApi.cpp xkb-switch/src/XKeyboard.cpp \
-	xkb-switch/src/XKeyboard.hpp actkbd/actkbd.c actkbd/actkbd.h \
-	actkbd/AUTHORS actkbd/ChangeLog actkbd/config.c actkbd/COPYING \
-	actkbd/FAQ actkbd/linux.c actkbd/Makefile actkbd/mask.c \
-	actkbd/NEWS actkbd/README actkbd/TODO \
-	actkbd/samples/actkbd.conf actkbd/samples/udev.rules
+EXTRA_DIST = scripts/openswitcher.sh.in xkb-switch actkbd debian
 CLEANFILES = $(bin_SCRIPTS)
 man1_MANS = doc/openswitcher.1
 all: all-am
@@ -884,7 +874,7 @@ distclean: distclean-am
 		-rm -f src/$(DEPDIR)/openswitcher-main.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-hdr distclean-tags
+	distclean-hdr distclean-local distclean-tags
 
 dvi: dvi-am
 
@@ -958,9 +948,9 @@ uninstall-man: uninstall-man1
 	cscope cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
 	dist-gzip dist-lzip dist-shar dist-tarZ dist-xz dist-zip \
 	dist-zstd distcheck distclean distclean-compile \
-	distclean-generic distclean-hdr distclean-tags distcleancheck \
-	distdir distuninstallcheck dvi dvi-am html html-am info \
-	info-am install install-am install-binPROGRAMS \
+	distclean-generic distclean-hdr distclean-local distclean-tags \
+	distcleancheck distdir distuninstallcheck dvi dvi-am html \
+	html-am info info-am install install-am install-binPROGRAMS \
 	install-binSCRIPTS install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-exec-hook \
 	install-html install-html-am install-info install-info-am \
@@ -976,10 +966,26 @@ uninstall-man: uninstall-man1
 
 
 install-exec-hook: $(bin_PROGRAMS)
-	scripts/install.sh
+	@if [ $(OPENSWITCHER_INSTALL) = 1 ]; then\
+		scripts/install.sh;\
+	fi
 
 uninstall-hook:
-	scripts/uninstall.sh
+	@if [ $(OPENSWITCHER_INSTALL) = 1 ]; then\
+		scripts/uninstall.sh;\
+	fi
+
+distclean-local:
+	rm -rf openswitcher*
+
+$(PACKAGE_TARNAME)-$(VERSION).tar.gz: $(bin_PROGRAMS)
+	$(MAKE) dist
+
+deb: $(PACKAGE_TARNAME)-$(VERSION).tar.gz
+	cp $(PACKAGE_TARNAME)-$(VERSION).tar.gz $(PACKAGE_TARNAME)_$(VERSION).orig.tar.gz
+	mkdir -p $(PWD)/$(PACKAGE_TARNAME)-$(VERSION)
+	tar -xzf $(PACKAGE_TARNAME)-$(VERSION).tar.gz
+	cd $(PACKAGE_TARNAME)-$(VERSION) && pwd && debuild
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

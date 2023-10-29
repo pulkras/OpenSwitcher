@@ -1,0 +1,64 @@
+#!/usr/bin/make -f
+
+# See debhelper(7) (uncomment to enable).
+# Output every command that modifies files on the build system.
+#export DH_VERBOSE = 1
+
+
+# See FEATURE AREAS in dpkg-buildflags(1).
+#export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+# See ENVIRONMENT in dpkg-buildflags(1).
+# Package maintainers to append CFLAGS.
+#export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
+# Package maintainers to append LDFLAGS.
+#export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
+
+%:
+	dh $@
+
+
+# dh_make generated override targets.
+# This is an example for Cmake (see <https://bugs.debian.org/641051>).
+#override_dh_auto_configure:
+#	dh_auto_configure -- \
+#	-DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH)
+
+OPENSWITCHER_PREFIX := $(CURDIR)/debian/openswitcher
+prefix := /usr
+sbindir := $(OPENSWITCHER_PREFIX)$(prefix)/sbin
+sysconfdir := $(OPENSWITCHER_PREFIX)/etc
+
+override_dh_auto_configure:
+	# ./configure   --prefix=/usr/
+	mkdir -p xkb-switch/build
+	pwd
+	cmake --install-prefix /usr/ -S xkb-switch -B xkb-switch/build
+	dh_auto_configure
+
+override_dh_auto_build:
+	# $(MAKE) 
+	$(MAKE) --directory=xkb-switch/build
+	$(MAKE) --directory=actkbd
+	dh_auto_build
+	
+
+override_dh_auto_install:
+	# $(MAKE) install DESTDIR=$(OPENSWITCHER_PREFIX)
+	$(MAKE) --directory=xkb-switch/build install DESTDIR=$(OPENSWITCHER_PREFIX)
+	mkdir -p $(OPENSWITCHER_PREFIX)/usr/lib/openswitcher/scripts/
+	find scripts/ -type f -name "*.sh" -exec cp -t $(OPENSWITCHER_PREFIX)/usr/lib/openswitcher/scripts/ {} +
+	find $(OPENSWITCHER_PREFIX)/usr/lib/openswitcher/scripts/ -type f -exec chmod +x {} +
+
+	install -D -m755 actkbd/actkbd $(sbindir)/actkbd
+	install -d -m755 $(sysconfdir)
+	echo "# actkbd configuration file" > $(sysconfdir)/actkbd.conf
+
+	dh_auto_install
+
+
+override_dh_auto_clean:
+	rm -rf xkb-switch/build
+	$(MAKE) --directory=actkbd clean
+	dh_auto_clean

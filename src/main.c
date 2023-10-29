@@ -51,7 +51,6 @@ int main() {
     uint8_t* text = readTextFromStdin();
 
     KeySym *arr = transform_stdin_to_KeySyms(text);
-    
     int32_t length = strlen((char *)text);
 
     if (length <= 0)
@@ -63,6 +62,7 @@ int main() {
     {
         send_KeySym(arr[i]);
     }
+	free(arr);
 
     return 0;
 }
@@ -100,19 +100,21 @@ KeySym *transform_stdin_to_KeySyms(uint8_t *text)
 
         xkb_keysym_t keysym = xkb_utf32_to_keysym((uint64_t)codepoint);
 
-
         char buffer[100];
         xkb_keysym_get_name(keysym, buffer, 100);
 
-        char* codestr = (char*)malloc(sizeof(char)*8);
+        char* codestr = (char*)malloc(sizeof(char)*15);
         snprintf(codestr, 15, "U+%04X", codepoint);
         // printf("codepoint: %s ", codestr);
 
         // printf("index: %d codepoint: %s name: %s \n", index-1, codestr, codestr);
 
         // This is expected to be KeySym = xkb_keysym_t
-        arr[index-1] = (KeySym)keysym;
+
+        arr[index-1] = (KeySym)keysym;	
         U8_NEXT(text, index, length, codepoint);
+
+		free(codestr);
     }
 
     return arr;

@@ -20,7 +20,7 @@
 3. **Read INSTALL**
 4. `./configure`
 5. `make`
-6. `sudo make install`
+6. `sudo make install OPENSWITCHER_INSTALL=1`
 
 # Run
 

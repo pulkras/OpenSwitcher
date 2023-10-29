@@ -1,0 +1,24 @@
+Source: openswitcher
+Section: unknown
+Priority: optional
+Maintainer: Ruslan Frolov Victorovich <gald.rus@yandex.ru>
+Rules-Requires-Root: no
+Build-Depends:
+ debhelper-compat (= 13),
+ autotools-dev,
+ cmake,
+ build-essential, 
+ xserver-xorg, libx11-dev, libxkbcommon-x11-dev, libxkbcommon-dev, libicu-dev
+Standards-Version: 4.6.2
+Homepage: <insert the upstream URL, if relevant>
+#Vcs-Browser: https://salsa.debian.org/debian/openswitcher
+#Vcs-Git: https://salsa.debian.org/debian/openswitcher.git
+
+Package: openswitcher
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+ xsel
+Description: <insert up to 60 chars description>
+ <Insert long description, indented with spaces.>
