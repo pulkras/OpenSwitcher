@@ -10,23 +10,46 @@
 .SH SYNOPSIS
 .B openswitcher
 [\fIOPTIONS\fR]
-\fIparameters\fR
 
 .SH DESCRIPTION
 \fBopenswitcher\fR - is a main program of OpenSwitcher project that takes selected text in input and transform it to sequence of keystrokes and emulates it.
 
 .SH OPTIONS
 .TP
-\fB-h\fP, \fB--help\fP
-Show help information
+\fB-h, --help\fP
+Display help message.
 
 .TP
-\fB-v\fP, \fB--version\fP
-Show version
+\fB-v, --version\fP
+	Print program version.
 
 .TP
-\fB-d, --debug\fR
-Enable debug mode for outputting additional information.
+\fB-c, --config\fP \fIPATH_TO_CONFIG\fP
+	Specify path to actkbd config. Default is \fB~/.config/actkbd/actkbd.conf\fP
+
+.TP
+\fB-r, --run\fP
+	Run key combination event loop.
+
+.TP
+\fB-s, --stop\fP
+	Stop key combination event loop.
+
+.TP
+\fB-d, --device\fP \fIPATH_TO_DEVICE\fP
+	Specify path to keyboard device. Default is \fB/dev/input/event0\fP
+
+.TP
+\fB-i, --input\fP
+	Enable input to transform KeySyms to input-event-codes.
+
+.TP
+\fB-o, --output\fP
+	Enable output to get transformed input-event-codes.
+
+.TP
+\fB    --verbose\fP
+	Enable verbose mode.
 
 .SH EXIT STATUS
 \fBopenswitcher\fR returns the following status values:
@@ -46,10 +69,14 @@ It is configure keys combination to run \fIopenswitcher.sh\fR default \fBCtr_L+A
 .PP
 To configure this file use syntax of \fIactkbd\fR described in 
 .B https://github.com/thkala/actkbd
-.PP
+.TP
 $\fBHOME_USER\fR/.xinitrc - is a config that X11 use when startup.
 .PP
 Need to automaticaly startup actkbd
+.TP
+\fIinput-device-info.sh\fP script uses to determine \fIPATH_TO_DEVICE\fP.
+.PP
+\fIopenswitcher.sh\fP script actkbd uses when key combination event occurs.
 
 .SH ENVIRONMENT
 \fBopenswitcher\fR currently working only on X11 Window System
@@ -85,7 +112,7 @@ or email
 .TP
 1. Select the text
 .TP
-2. \fBxsel | sudo openswitcher\fR
+2. \fBxsel | sudo openswitcher --device "$(input-device-info.sh)" --input\fR
 
 .PP
 .I Run openswitcher in a grafical environment:
@@ -117,3 +144,10 @@ To visit the official website of \fBxkb-switch\fR, go to:
 .BR https://github.com/grwlf/xkb-switch
 
 For more information on using \fBxsel\fR and its capabilities, refer to the user manual or documentation that accompanies the utility.
+
+.TP
+.B xkb-switch --help
+
+.TP
+.B sudo actkbd --help
+

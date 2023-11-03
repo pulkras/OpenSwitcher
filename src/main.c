@@ -389,9 +389,8 @@ int options_handler(int argc, char * const argv[])
 		case 'h':
 		{
 			puts("Usage: openswitcher [options]");
-			puts("Options:\n");
+			puts("Options:");
 			puts("  -h, --help                     Display this help message.");
-			puts("  -v, --verbose                  Enable verbose mode.");
 			puts("  -c, --config <path_to_config>  Specify path to actkbd config. Default is ~/.config/actkbd/actkbd.conf");
 			puts("  -r, --run                      Run key combination event loop.");
 			puts("  -s, --stop                     Stop key combination event loop.");
@@ -399,6 +398,7 @@ int options_handler(int argc, char * const argv[])
 			puts("  -d, --device <path_to_device>  Specify path to keyboard device. Default is /dev/input/event0");
 			puts("  -i, --input                    Enable input to transform KeySyms to input-event-codes.");
 			puts("  -o, --output                   Enable output to get transformed input-event-codes.");
+			puts("      --verbose                  Enable verbose mode.");
 			
 			break;	
 		}

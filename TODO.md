@@ -13,7 +13,7 @@
  - [x] add man page
  - [ ] add tests
  - [x] add options
- - [ ] rename OPENSWITCHER_INSTALL with local
+ - [x] rename OPENSWITCHER_INSTALL with local
  - [ ] autoompletion bash zsh sh ...
- - [ ] update man
+ - [x] update man
  - [x] add input and output options
