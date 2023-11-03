@@ -343,12 +343,13 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-OPENSWITCHER_INSTALL = 0
+OPENSWITCHER_LOCAL_INSTALL = 0
 openswitcher_SOURCES = src/main.c
 openswitcher_CFLAGS = $(DEPS_CFLAGS)
 openswitcher_LDADD = $(DEPS_LIBS)
-bin_SCRIPTS = scripts/openswitcher.sh
-EXTRA_DIST = scripts/openswitcher.sh.in xkb-switch actkbd debian
+bin_SCRIPTS = scripts/openswitcher.sh scripts/input-device-info.sh
+EXTRA_DIST = scripts/openswitcher.sh.in \
+	scripts/input-device-info.sh.in xkb-switch actkbd debian
 CLEANFILES = $(bin_SCRIPTS)
 man1_MANS = doc/openswitcher.1
 all: all-am
@@ -966,12 +967,12 @@ uninstall-man: uninstall-man1
 
 
 install-exec-hook: $(bin_PROGRAMS)
-	@if [ $(OPENSWITCHER_INSTALL) = 1 ]; then\
+	@if [ $(OPENSWITCHER_LOCAL_INSTALL) = 1 ]; then\
 		scripts/install.sh;\
 	fi
 
 uninstall-hook:
-	@if [ $(OPENSWITCHER_INSTALL) = 1 ]; then\
+	@if [ $(OPENSWITCHER_LOCAL_INSTALL) = 1 ]; then\
 		scripts/uninstall.sh;\
 	fi
 

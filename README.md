@@ -20,7 +20,7 @@
 3. **Read INSTALL**
 4. `./configure`
 5. `make`
-6. `sudo make install OPENSWITCHER_INSTALL=1`
+6. `sudo make install OPENSWITCHER_LOCAL_INSTALL=1`
 
 ## Make .deb package
 

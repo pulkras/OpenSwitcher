@@ -10,6 +10,10 @@
  - [x] add autoswitch to another language on KDE
  - [x] add when instal autorun xbindkeys if nessecary
  - [x] add autoswitch to another language on Glib
- - [ ] add man page
+ - [x] add man page
  - [ ] add tests
- - [ ] add options
+ - [x] add options
+ - [ ] rename OPENSWITCHER_INSTALL with local
+ - [ ] autoompletion bash zsh sh ...
+ - [ ] update man
+ - [x] add input and output options

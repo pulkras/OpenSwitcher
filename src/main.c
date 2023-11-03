@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <time.h>
+#include <getopt.h>
 
 
 #include <X11/Xlib.h>
@@ -34,40 +35,57 @@
 #include <linux/input.h>
 #include <linux/keyboard.h>
 
+#include <config.h>
 
-uint8_t *readTextFromStdin();
+
+uint8_t *read_text_from_stdin();
 KeySym *transform_stdin_to_KeySyms(uint8_t *text);
 int send_KeySym(KeySym KeySym);
 int send_key(int fd, struct input_event *ev, int value, KeyCode keycode);
 int create_event(struct input_event *ev, int type, int code, int value);
 int write_event(int fd, const struct input_event *ev);
-uint8_t* appendCharToString(uint8_t* str, uint8_t c);
+uint8_t* append_char_to_string(uint8_t* str, uint8_t c);
 KeySym KeyCodeToKeySym(Display * display, KeyCode keycode, unsigned int event_mask);
+int options_handler(int argc, char * const argv[]);
+char *get_prefix(const char *program);
+int message(const char *text);
 
+static int verbose_flag = 0;
+static int input_flag = 0;
+static int output_flag = 0;
+static char *config_path = "~/.config/actkbd/actkbd.conf";
+// eventX должен быть равен клавиатуре, чтобы найти клавиатуру воспользуйтесь sudo evtest
+static char* inputDevice = "/dev/input/event0";
 
+int main(int argc, char * const argv[])
+{
 
+	options_handler(argc, argv);
 
-int main() {
-    uint8_t* text = readTextFromStdin();
+	if (input_flag)
+	{
+		uint8_t* text = read_text_from_stdin();
+		KeySym *arr = transform_stdin_to_KeySyms(text);
+		int32_t length = strlen((char *)text);
 
-    KeySym *arr = transform_stdin_to_KeySyms(text);
-    int32_t length = strlen((char *)text);
+		if (length <= 0)
+		{
+			return -1;
+		}
 
-    if (length <= 0)
-    {
-        return -1;
-    }
-
-    for (int i = 0; i < length; i++)
-    {
-        send_KeySym(arr[i]);
-    }
-	free(arr);
+		for (int i = 0; i < length; i++)
+		{
+			send_KeySym(arr[i]);
+		}
+		free(arr);
+	}
+	
+    
 
     return 0;
 }
 
-uint8_t *readTextFromStdin()
+uint8_t *read_text_from_stdin()
 {
     uint8_t ch;
     uint8_t *text = malloc(1*sizeof(uint8_t));
@@ -80,7 +98,7 @@ uint8_t *readTextFromStdin()
     text[0] = '\0';
 
     for (size_t i = 1; read(STDIN_FILENO, &ch, 1) > 0; i++)
-        text = appendCharToString(text, ch);
+        text = append_char_to_string(text, ch);
 
     return text;
 }
@@ -100,11 +118,11 @@ KeySym *transform_stdin_to_KeySyms(uint8_t *text)
 
         xkb_keysym_t keysym = xkb_utf32_to_keysym((uint64_t)codepoint);
 
-        char buffer[100];
-        xkb_keysym_get_name(keysym, buffer, 100);
+        // char buffer[100];
+        // xkb_keysym_get_name(keysym, buffer, 100);
 
-        char* codestr = (char*)malloc(sizeof(char)*15);
-        snprintf(codestr, 15, "U+%04X", codepoint);
+        // char* codestr = (char*)malloc(sizeof(char)*15);
+        // snprintf(codestr, 15, "U+%04X", codepoint);
         // printf("codepoint: %s ", codestr);
 
         // printf("index: %d codepoint: %s name: %s \n", index-1, codestr, codestr);
@@ -114,7 +132,7 @@ KeySym *transform_stdin_to_KeySyms(uint8_t *text)
         arr[index-1] = (KeySym)keysym;	
         U8_NEXT(text, index, length, codepoint);
 
-		free(codestr);
+		// free(codestr);
     }
 
     return arr;
@@ -130,8 +148,6 @@ int send_KeySym(KeySym keysym)
 
     KeyCode keycode = XKeysymToKeycode(display, keysym);
 
-    // eventX должен быть равен клавиатуре, чтобы найти клавиатуру воспользуйтесь sudo evtest
-    const char* inputDevice = "/dev/input/event0";
     int fd = open(inputDevice, O_WRONLY);
     if (fd == -1) {
         printf("Ошибка при открытии устройства ввода\n");
@@ -140,7 +156,7 @@ int send_KeySym(KeySym keysym)
     // ---------------------------------------------------
     char* keysymName = XKeysymToString(keysym);
 
-    // printf("Keysym: %s\n", keysymName);
+    message(keysymName);
 
 
     unsigned int event_mask = ShiftMask | LockMask;
@@ -179,6 +195,9 @@ int send_KeySym(KeySym keysym)
 
 int send_key(int fd, struct input_event *ev, int value, KeyCode keycode)
 {
+	if (output_flag)
+	printf("%u ", keycode-8);
+	
     // keycode от scancode отличается на 8
     // нажатие клавиши
     if (create_event(ev, EV_KEY, keycode-8, value))
@@ -226,7 +245,7 @@ int create_event(struct input_event *ev, int type, int code, int value)
 	return 0;
 }
 
-uint8_t* appendCharToString(uint8_t* str, uint8_t c)
+uint8_t* append_char_to_string(uint8_t* str, uint8_t c)
 {
     // Получение текущей длины строки
     int length = strlen((char *)str);
@@ -310,5 +329,223 @@ KeySym KeyCodeToKeySym(Display * display, KeyCode keycode, unsigned int event_ma
     }
 
     return keysym;
+}
+
+int options_handler(int argc, char * const argv[])
+{
+
+	int c;
+
+  	while (1)
+    {
+      	static struct option long_options[] =
+        {
+			/* These options set a flag. */
+			{"verbose", no_argument,       &verbose_flag, 1},
+			/* These options don’t set a flag.
+				We distinguish them by their indices. */
+			{"config",  	required_argument, 	0, 	'c'},
+			{"help",    	no_argument,       	0, 	'h'},
+			{"run",     	no_argument,       	0, 	'r'},
+			{"stop",     	no_argument,      	0, 	's'},
+			{"print-config",no_argument, 		0, 	'p'},
+			{"debug",		no_argument,		0,	't'},
+			{"version",		no_argument,		0,	'v'},
+			{"device",		required_argument,	0,	'd'},
+			{"input",		no_argument,		0,	'i'},
+			{"output",		no_argument,		0,	'o'},
+			{0, 0, 0, 0}
+        };
+		/* getopt_long stores the option index here. */
+		int option_index = 0;
+
+		c = getopt_long (argc, argv, "c:hrsptvd:io",
+                       long_options, &option_index);
+
+		/* Detect the end of the options. */
+		if (c == -1)
+        break;
+
+      	switch (c)
+        {
+        case 0:
+			/* If this option set a flag, do nothing else now. */
+			if (long_options[option_index].flag != 0)
+				break;
+			printf ("option %s", long_options[option_index].name);
+			if (optarg)
+				printf (" with arg %s", optarg);
+			printf ("\n");
+			break;
+
+        case 'c':
+			config_path = optarg;	
+			break;
+
+        case 't':
+			printf ("option -t with value `%s'\n", optarg);
+			break;
+		
+		case 'h':
+		{
+			puts("Usage: openswitcher [options]");
+			puts("Options:\n");
+			puts("  -h, --help                     Display this help message.");
+			puts("  -v, --verbose                  Enable verbose mode.");
+			puts("  -c, --config <path_to_config>  Specify path to actkbd config. Default is ~/.config/actkbd/actkbd.conf");
+			puts("  -r, --run                      Run key combination event loop.");
+			puts("  -s, --stop                     Stop key combination event loop.");
+			puts("  -v, --version                  Print program version.");
+			puts("  -d, --device <path_to_device>  Specify path to keyboard device. Default is /dev/input/event0");
+			puts("  -i, --input                    Enable input to transform KeySyms to input-event-codes.");
+			puts("  -o, --output                   Enable output to get transformed input-event-codes.");
+			
+			break;	
+		}
+		
+		case 'v':
+			printf("%s\n", VERSION);
+			break;
+		
+		case 'p':
+		{
+			size_t command_length = strlen(config_path) + strlen("cat ") + 1;
+			char *command = malloc(command_length);
+			snprintf(command, command_length, "cat %s", config_path);
+
+			system(command);
+
+			free(command);
+			break;
+		}
+
+		case 'r':
+		{
+			// Проверка, запущен ли уже actkbd
+			if (system("pgrep actkbd >/dev/null") == 0) {
+				message("Перезапуск actkbd");
+
+				// actkbd уже запущен, остановка процесса
+				if (system("sudo killall actkbd") != 0)
+				break;
+				
+				size_t command_length = strlen(config_path) + strlen("sudo actkbd --daemon --config  &") + 1;
+				char *command = malloc(command_length);
+				snprintf(command, command_length, "sudo actkbd --daemon --config %s &", config_path);
+
+				if (system(command) != 0)
+				{
+					free(command);
+					break;
+				}
+				free(command);
+			}else
+			{
+				message("Запуск actkbd");
+				
+				// Запуск actkbd
+				size_t command_length = strlen(config_path) + strlen("sudo actkbd --daemon --config  &") + 1;
+				char *command = malloc(command_length);
+				snprintf(command, command_length, "sudo actkbd --daemon --config %s &", config_path);
+
+				if (system(command) != 0)
+				{
+					free(command);
+					break;
+				}
+				free(command);
+			}
+
+			break;
+		}
+
+		case 's':
+		{
+			message("Остановка actkbd");
+			system("sudo killall actkbd");
+			break;
+		}
+		
+		case 'd':
+			inputDevice = optarg;
+			break;
+
+		case 'i':
+			input_flag = 1;
+			break;
+			
+		case 'o':
+			output_flag = 1;
+			break;
+
+        case '?':
+			/* getopt_long already printed an error message. */
+			break;
+
+        default:
+          	abort ();
+        }
+    }
+
+  	/* Instead of reporting ‘--verbose’
+	and ‘--brief’ as they are encountered,
+	we report the final status resulting from them. */
+  	// if (verbose_flag)
+    // puts ("verbose flag is set");
+
+	/* Print any remaining command line arguments (not options). */
+	if (optind < argc)
+    {
+		printf ("non-option ARGV-elements: ");
+		while (optind < argc)
+			printf ("%s ", argv[optind++]);
+		putchar ('\n');
+    }
+
+	return 0;
+}
+
+char *get_prefix(const char *program)
+{
+    char *which = "which ";
+    char *which_command = malloc(strlen(which) + strlen(program) + 1);
+    
+    strcpy(which_command, which);
+    strcat(which_command, program);
+
+	FILE* fd = popen(which_command, "r");
+	if (fd == NULL) {
+        printf("Ошибка при открытии потока для команды\n");
+        return NULL;
+    }
+
+	char c;
+    char *path = malloc(sizeof(char));
+	path[0] = '\0';
+
+	while ((c = getc(fd)) != EOF)
+	path = append_char_to_string(path, c);
+
+	char *prefix = malloc(sizeof(char));
+	prefix[0] = '\0';
+
+	for (int i = 0; path[i] != 'b'; i++)
+	prefix = append_char_to_string(prefix, path[i]);
+
+	free(which_command);
+	free(path);
+	pclose(fd);
+
+	return prefix;
+}
+
+int message(const char *text)
+{
+	if (verbose_flag)
+	{
+		return puts(text);
+	}
+	
+	return EOF;
 }
 

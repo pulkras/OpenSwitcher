@@ -1,5 +1,5 @@
 VERSION = @PACKAGE_VERSION@
-OPENSWITCHER_INSTALL = 0
+OPENSWITCHER_LOCAL_INSTALL = 0
 
 bin_PROGRAMS = openswitcher
 openswitcher_SOURCES = src/main.c
@@ -10,6 +10,9 @@ openswitcher_LDADD = $(DEPS_LIBS)
 
 bin_SCRIPTS = scripts/openswitcher.sh
 EXTRA_DIST = scripts/openswitcher.sh.in
+
+bin_SCRIPTS += scripts/input-device-info.sh
+EXTRA_DIST += scripts/input-device-info.sh.in
 
 CLEANFILES = $(bin_SCRIPTS)
 
@@ -24,12 +27,12 @@ EXTRA_DIST += debian
 
 
 install-exec-hook: $(bin_PROGRAMS)
-	@if [ $(OPENSWITCHER_INSTALL) = 1 ]; then\
+	@if [ $(OPENSWITCHER_LOCAL_INSTALL) = 1 ]; then\
 		scripts/install.sh;\
 	fi
 
 uninstall-hook:
-	@if [ $(OPENSWITCHER_INSTALL) = 1 ]; then\
+	@if [ $(OPENSWITCHER_LOCAL_INSTALL) = 1 ]; then\
 		scripts/uninstall.sh;\
 	fi
 

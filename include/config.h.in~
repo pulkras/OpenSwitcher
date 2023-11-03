@@ -1,5 +1,7 @@
 /* include/config.h.in.  Generated from configure.ac by autoheader.  */
 
+#define XDG_CONFIG_HOME @XDG_CONFIG_HOME@
+
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
@@ -81,6 +83,9 @@
 
 /* Version number of package */
 #undef VERSION
+
+/* Path to the XDG configuration directory */
+#undef XDG_CONFIG_HOME
 
 /* Define for Solaris 2.5.1 so the uint64_t typedef from <sys/synch.h>,
    <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the

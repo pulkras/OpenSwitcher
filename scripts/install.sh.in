@@ -78,17 +78,6 @@ fi
 
 
 
-# Проверка, запущен ли уже actkbd
-if pgrep actkbd >/dev/null; then
-	echo "Перезапуск actkbd"
-    # actkbd уже запущен, остановка процесса
-    killall actkbd
-fi
-
-echo "Запуск actkbd"
-# Запуск actkbd
-echo "sudo actkbd --daemon --config $XDG_CONFIG_HOME/actkbd/actkbd.conf  &"
-sudo actkbd --daemon --config "$XDG_CONFIG_HOME/actkbd/actkbd.conf"  &
-
+sudo openswitcher --run
 
 echo "Установка завершена."
