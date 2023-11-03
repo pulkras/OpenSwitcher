@@ -1,17 +1,7 @@
 # Requirements
 ## Debian
-
-1.  `sudo apt-get install build-essential`
-
-2.  `sudo apt install xserver-xorg`
-
-3.  `sudo apt install libx11-dev libxkbcommon-x11-dev`
-
-4.  `sudo apt install libxkbcommon-dev`
-
-5.  `sudo apt install libicu-dev`
-
-6.  `sudo apt install xorg-dev`
+### For build
+`sudo apt-get install build-essential xserver-xorg libx11-dev libxkbcommon-x11-dev libicu-dev xorg-dev`
 
 # Install
 
@@ -36,7 +26,7 @@
 # Run in terminal
 
 1. **Select the text**
-2.  `xkb-switch -n && xsel | sudo openswitcher`
+2.  `xkb-switch -n && xsel | sudo openswitcher --device "$(input-device-info.sh)" --input`
 
 # Docs generating
 
