@@ -13,9 +13,10 @@
 6. `sudo make install OPENSWITCHER_LOCAL_INSTALL=1`
 
 ## Make .deb package
-
-1. `./configure`
-2. `make deb`
+1. `git clone -b test https://github.com/pulkras/OpenSwitcher`
+2. `cd OpenSwitcher`
+3. `./configure`
+4. `make deb`
 
 # Run
 
@@ -25,7 +26,7 @@
 
 # Run in terminal
 
-1. **Select the text**
+1. Select the text
 2.  `xkb-switch -n && xsel | sudo openswitcher --device "$(input-device-info.sh)" --input`
 
 # Docs generating
