@@ -1,5 +1,5 @@
 #!/bin/bash
 
 xkb-switch -n
-sleep 0.5
-xsel | sudo openswitcher --device "$(input-device-info.sh)" --input
+sleep 1
+xsel -o | sudo openswitcher --device "$(input-device-info.sh)" --input

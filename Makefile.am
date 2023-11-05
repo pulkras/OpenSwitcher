@@ -36,15 +36,25 @@ uninstall-hook:
 		scripts/uninstall.sh;\
 	fi
 
-distclean-local:
+# compile xkb-switch + actkbd
+all-local:
+	cd xkb-switch/ && mkdir -p build && cd build && cmake .. && $(MAKE)
+	cd actkbd/ && $(MAKE)
+
+# clean xkb-switch + actkbd
+clean-local:
+	rm -rf xkb-switch/build
+	$(MAKE) --directory=actkbd clean
+
+distclean-local: clean
 	rm -rf openswitcher*
 
 $(PACKAGE_TARNAME)-$(VERSION).tar.gz: $(bin_PROGRAMS)
 	$(MAKE) dist
 
+# make deb packege
 deb: $(PACKAGE_TARNAME)-$(VERSION).tar.gz
 	cp $(PACKAGE_TARNAME)-$(VERSION).tar.gz $(PACKAGE_TARNAME)_$(VERSION).orig.tar.gz
 	mkdir -p $(PWD)/$(PACKAGE_TARNAME)-$(VERSION)
 	tar -xzf $(PACKAGE_TARNAME)-$(VERSION).tar.gz
 	cd $(PACKAGE_TARNAME)-$(VERSION) && pwd && debuild
-	

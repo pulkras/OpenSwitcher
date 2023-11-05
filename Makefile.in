@@ -828,7 +828,7 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(MANS)
+all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(MANS) all-local
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -868,7 +868,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-local mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
@@ -944,18 +944,19 @@ uninstall-man: uninstall-man1
 
 .MAKE: install-am install-exec-am install-strip uninstall-am
 
-.PHONY: CTAGS GTAGS TAGS all all-am am--depfiles am--refresh check \
-	check-am clean clean-binPROGRAMS clean-cscope clean-generic \
-	cscope cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
-	dist-gzip dist-lzip dist-shar dist-tarZ dist-xz dist-zip \
-	dist-zstd distcheck distclean distclean-compile \
-	distclean-generic distclean-hdr distclean-local distclean-tags \
-	distcleancheck distdir distuninstallcheck dvi dvi-am html \
-	html-am info info-am install install-am install-binPROGRAMS \
-	install-binSCRIPTS install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-exec-hook \
-	install-html install-html-am install-info install-info-am \
-	install-man install-man1 install-pdf install-pdf-am install-ps \
+.PHONY: CTAGS GTAGS TAGS all all-am all-local am--depfiles am--refresh \
+	check check-am clean clean-binPROGRAMS clean-cscope \
+	clean-generic clean-local cscope cscopelist-am ctags ctags-am \
+	dist dist-all dist-bzip2 dist-gzip dist-lzip dist-shar \
+	dist-tarZ dist-xz dist-zip dist-zstd distcheck distclean \
+	distclean-compile distclean-generic distclean-hdr \
+	distclean-local distclean-tags distcleancheck distdir \
+	distuninstallcheck dvi dvi-am html html-am info info-am \
+	install install-am install-binPROGRAMS install-binSCRIPTS \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-exec-hook install-html \
+	install-html-am install-info install-info-am install-man \
+	install-man1 install-pdf install-pdf-am install-ps \
 	install-ps-am install-strip installcheck installcheck-am \
 	installdirs maintainer-clean maintainer-clean-generic \
 	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
@@ -976,12 +977,23 @@ uninstall-hook:
 		scripts/uninstall.sh;\
 	fi
 
-distclean-local:
+# compile xkb-switch + actkbd
+all-local:
+	cd xkb-switch/ && mkdir -p build && cd build && cmake .. && $(MAKE)
+	cd actkbd/ && $(MAKE)
+
+# clean xkb-switch + actkbd
+clean-local:
+	rm -rf xkb-switch/build
+	$(MAKE) --directory=actkbd clean
+
+distclean-local: clean
 	rm -rf openswitcher*
 
 $(PACKAGE_TARNAME)-$(VERSION).tar.gz: $(bin_PROGRAMS)
 	$(MAKE) dist
 
+# make deb packege
 deb: $(PACKAGE_TARNAME)-$(VERSION).tar.gz
 	cp $(PACKAGE_TARNAME)-$(VERSION).tar.gz $(PACKAGE_TARNAME)_$(VERSION).orig.tar.gz
 	mkdir -p $(PWD)/$(PACKAGE_TARNAME)-$(VERSION)

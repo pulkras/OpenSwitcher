@@ -37,11 +37,11 @@ override_dh_auto_configure:
 	cmake --install-prefix /usr/ -S xkb-switch -B xkb-switch/build
 	dh_auto_configure
 
-override_dh_auto_build:
-	# $(MAKE) 
-	$(MAKE) --directory=xkb-switch/build
-	$(MAKE) --directory=actkbd
-	dh_auto_build
+# override_dh_auto_build:
+# 	# $(MAKE) 
+# 	$(MAKE) --directory=xkb-switch/build
+# 	$(MAKE) --directory=actkbd
+# 	dh_auto_build
 	
 
 override_dh_auto_install:
@@ -58,7 +58,7 @@ override_dh_auto_install:
 	dh_auto_install
 
 
-override_dh_auto_clean:
-	rm -rf xkb-switch/build
-	$(MAKE) --directory=actkbd clean
-	dh_auto_clean
+# override_dh_auto_clean:
+# 	rm -rf xkb-switch/build
+# 	$(MAKE) --directory=actkbd clean
+# 	dh_auto_clean

@@ -49,10 +49,10 @@ if [[ $OPENSWITCHER_INSTALL_WITH_DPKG != 1 ]]; then
 		echo "cmake найден"
 		echo "Установка xkb-switch"
 		cd xkb-switch/
-		mkdir build 
+		mkdir -p build 
 		cd build
-		cmake ..
-		make
+		# cmake ..
+		# make
 		sudo make install
 		sudo ldconfig
 		cd ..
@@ -67,7 +67,7 @@ if [[ $OPENSWITCHER_INSTALL_WITH_DPKG != 1 ]]; then
 	if sudo modprobe evdev >/dev/null; then
 		cd actkbd/
 		echo "evdev найден"
-		make
+		# make
 		sudo make install
 		cd ../
 	else

@@ -1,5 +1,5 @@
  - [x] Create function for transforming utf8 -> keysym
- - [x]  Create function that print keycodes events (print processed text)
+ - [x] Create function that print keycodes events (print processed text)
  - [x] Replace check_combination to using util may be gnome or kde
  - [x] Replase getSelectedText to xsel util
  - [x] Debug some problems when text replace
