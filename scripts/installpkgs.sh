@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ "$distro" = "debian" ]; then
+	# For Debian
+	# Check requested packages 
+	for package in "${required_packages[@]}"; do
+		if ! dpkg -s "$package" >/dev/null; then
+			echo "Необходимый пакет $package не установлен. Установка..."
+			if ! sudo apt install "$package"; then
+				echo "Error: для работы программы необходим $package." >> /dev/stderr
+				exit 1;
+			fi
+		else
+			echo "Пакет $package уже установлен."
+		fi
+	done
+fi
+
+
+echo "Проверка завершена.
+"

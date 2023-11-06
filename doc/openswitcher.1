@@ -1,0 +1,153 @@
+.\" NAME
+.\"
+.\" myapp - Utility for performing tasks
+.\"
+.TH OPENSWITCHER 1 "" "version 0.9.1" OPENSWITCHER
+
+.SH NAME
+\fBopenswitcher\fR - Utility for switching layout of currently selected text
+
+.SH SYNOPSIS
+.B openswitcher
+[\fIOPTIONS\fR]
+
+.SH DESCRIPTION
+\fBopenswitcher\fR - is a main program of OpenSwitcher project that takes selected text in input and transform it to sequence of keystrokes and emulates it.
+
+.SH OPTIONS
+.TP
+\fB-h, --help\fP
+Display help message.
+
+.TP
+\fB-v, --version\fP
+	Print program version.
+
+.TP
+\fB-c, --config\fP \fIPATH_TO_CONFIG\fP
+	Specify path to actkbd config. Default is \fB~/.config/actkbd/actkbd.conf\fP
+
+.TP
+\fB-r, --run\fP
+	Run key combination event loop.
+
+.TP
+\fB-s, --stop\fP
+	Stop key combination event loop.
+
+.TP
+\fB-d, --device\fP \fIPATH_TO_DEVICE\fP
+	Specify path to keyboard device. Default is \fB/dev/input/event0\fP
+
+.TP
+\fB-i, --input\fP
+	Enable input to transform KeySyms to input-event-codes.
+
+.TP
+\fB-o, --output\fP
+	Enable output to get transformed input-event-codes.
+
+.TP
+\fB    --verbose\fP
+	Enable verbose mode.
+
+.SH EXIT STATUS
+\fBopenswitcher\fR returns the following status values:
+.TP
+\fB0\fR
+Successful termination of the application.
+.TP
+\fB1\fR
+General application error.
+
+.SH FILES
+\fBopenswitcher\fR works with configs:
+.PP
+$\fBXDG_CONFIG_HOME\fR/actkbd/actkbd.conf - is a config for \fIactkbd\fR programm.
+.PP
+It is configure keys combination to run \fIopenswitcher.sh\fR default \fBCtr_L+Alt_L\fR
+.PP
+To configure this file use syntax of \fIactkbd\fR described in 
+.B https://github.com/thkala/actkbd
+.TP
+$\fBHOME_USER\fR/.xinitrc - is a config that X11 use when startup.
+.PP
+Need to automaticaly startup actkbd
+.TP
+\fIinput-device-info.sh\fP script uses to determine \fIPATH_TO_DEVICE\fP.
+.PP
+\fIopenswitcher.sh\fP script actkbd uses when key combination event occurs.
+
+.SH ENVIRONMENT
+\fBopenswitcher\fR currently working only on X11 Window System
+
+.SH VERSION
+\fBopenswitcher\fR version 0.9.1
+
+.SH STANDARDS
+\fBopenswitcher\fR complies with POSIX standards.
+
+.SH HISTORY
+Introduced in version 1.0.
+
+.SH NOTES
+.B openswitcher
+use these programs:
+
+.I actkbd
+.I xsel
+.I xkb-switch
+
+Attention! This application is currently under development and may have some limitations or errors.
+
+.SH BUGS
+.PP
+Send bugs to
+.BR https://github.com/pulkras/OpenSwitcher/tree/test
+or email
+
+.SH EXAMPLES
+.PP
+.I Run openswitcher in a terminal:
+.TP
+1. Select the text
+.TP
+2. \fBxsel | sudo openswitcher --device "$(input-device-info.sh)" --input\fR
+
+.PP
+.I Run openswitcher in a grafical environment:
+.TP
+1. Select the text
+.TP
+2. Press default \fBCtr_L+Alt_L\fR shortcut
+
+.SH AUTHORS
+Authors: Frolov Ruslan <gald.rus@yandex.ru>
+
+.SH COPYRIGHT
+Copyright (c) 2022, Your Company. All rights reserved.
+
+.SH SEE ALSO
+Additional information can be found in the user manual or on the \fBopenswitcher\fR website.
+
+To view the \fBxsel\fR man page, use the following command:
+.BR man
+xsel 
+
+To visit the official website of \fBxsel\fR, go to:
+.BR https://github.com/kfish/xsel 
+
+To visit the official website of \fBactkbd\fR, go to:
+.BR https://github.com/thkala/actkbd
+
+To visit the official website of \fBxkb-switch\fR, go to:
+.BR https://github.com/grwlf/xkb-switch
+
+For more information on using \fBxsel\fR and its capabilities, refer to the user manual or documentation that accompanies the utility.
+
+.TP
+.B xkb-switch --help
+
+.TP
+.B sudo actkbd --help
+

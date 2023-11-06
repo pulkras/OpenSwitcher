@@ -22,6 +22,9 @@ if [[ $OPENSWITCHER_INSTALL_WITH_DPKG != 1 ]]; then
 	sudo rm /usr/local/lib/libxkbswitch.so.2
 	sudo rm /usr/local/lib/libxkbswitch.so
 	sudo rm /usr/local/share/man/man1/xkb-switch.1.gz
+	cd xkb-switch
+	make clean
+	cd ..
 
 	prefix="/usr/local"
 	sbindir="$prefix/sbin"
@@ -30,8 +33,15 @@ if [[ $OPENSWITCHER_INSTALL_WITH_DPKG != 1 ]]; then
 	echo "Удалние actkbd"
 	sudo rm -f "$sbindir/actkbd"
 	sudo rm -f "$sysconfdir/actkbd.conf"
+	cd actkbd
+	make clean
+	cd ..
 
 fi
+
+
+
+
 
 
 echo "Отсановка actkbd"

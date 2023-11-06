@@ -17,3 +17,5 @@
  - [ ] autoompletion bash zsh sh ...
  - [x] update man
  - [x] add input and output options
+ - [ ] need translate to english
+ - [x] add debug option
