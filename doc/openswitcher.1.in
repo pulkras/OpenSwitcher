@@ -12,12 +12,12 @@
 [\fIOPTIONS\fR]
 
 .SH DESCRIPTION
-\fBopenswitcher\fR - is a main program of OpenSwitcher project that takes selected text in input and transform it to sequence of keystrokes and emulates it.
+\fBopenswitcher\fR - is a main program of OpenSwitcher project that takes selected text in standart input and transform it to sequence of keystrokes and emulates it.
 
 .SH OPTIONS
 .TP
 \fB-h, --help\fP
-Display help message.
+	Display help message.
 
 .TP
 \fB-v, --version\fP
@@ -41,15 +41,19 @@ Display help message.
 
 .TP
 \fB-i, --input\fP
-	Enable input to transform KeySyms to input-event-codes.
+	Enable standart input to transform KeySyms to input-event-codes.
 
 .TP
 \fB-o, --output\fP
-	Enable output to get transformed input-event-codes.
+	Enable standart output to get transformed input-event-codes.
 
 .TP
 \fB    --verbose\fP
 	Enable verbose mode.
+
+.TP
+\fB    --debug\fP
+	Enable debug mode.
 
 .SH EXIT STATUS
 \fBopenswitcher\fR returns the following status values:
@@ -57,7 +61,7 @@ Display help message.
 \fB0\fR
 Successful termination of the application.
 .TP
-\fB1\fR
+\fB-1\fR
 General application error.
 
 .SH FILES
@@ -76,7 +80,7 @@ Need to automaticaly startup actkbd
 .TP
 \fIinput-device-info.sh\fP script uses to determine \fIPATH_TO_DEVICE\fP.
 .PP
-\fIopenswitcher.sh\fP script actkbd uses when key combination event occurs.
+actkbd uses the \fIopenswitcher.sh\fP script when key combination event occurs.
 
 .SH ENVIRONMENT
 \fBopenswitcher\fR currently working only on X11 Window System
@@ -85,7 +89,7 @@ Need to automaticaly startup actkbd
 \fBopenswitcher\fR version @VERSION@
 
 .SH STANDARDS
-\fBopenswitcher\fR complies with POSIX standards.
+\fBopenswitcher\fR complies with Linux standards.
 
 .SH HISTORY
 Introduced in version 1.0.
@@ -112,7 +116,7 @@ or email
 .TP
 1. Select the text
 .TP
-2. \fBxsel | sudo openswitcher --device "$(input-device-info.sh)" --input\fR
+2. \fBxkb-switch -n && xsel | sudo openswitcher --device "$(input-device-info.sh)"\fR
 
 .PP
 .I Run openswitcher in a grafical environment:
@@ -131,8 +135,10 @@ Copyright (c) 2022, Your Company. All rights reserved.
 Additional information can be found in the user manual or on the \fBopenswitcher\fR website.
 
 To view the \fBxsel\fR man page, use the following command:
-.BR man
-xsel 
+.BR man xsel 
+
+To view the \fBxkb-switch\fR man page, use the following command:
+.BR man xkb-switch
 
 To visit the official website of \fBxsel\fR, go to:
 .BR https://github.com/kfish/xsel 

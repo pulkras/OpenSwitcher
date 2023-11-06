@@ -27,7 +27,7 @@
 # Run in terminal
 
 1. Select the text
-2.  `xkb-switch -n && xsel | sudo openswitcher --device "$(input-device-info.sh)" --input`
+2.  `xkb-switch -n && xsel | sudo openswitcher --device "$(input-device-info.sh)"`
 
 # Docs generating
 

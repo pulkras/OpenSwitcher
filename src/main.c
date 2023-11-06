@@ -35,6 +35,8 @@
 #include <linux/input.h>
 #include <linux/keyboard.h>
 
+#include <sys/epoll.h>
+
 #include <config.h>
 
 
@@ -59,57 +61,86 @@ static char *config_path = "~/.config/actkbd/actkbd.conf";
 // eventX is a keyboard driver, if you want to setup it try sudo evtest
 static char* inputDevice = "/dev/input/event0";
 
+
 int main(int argc, char * const argv[])
 {
-
-	
-	if (options_handler(argc, argv) != 0)
+    if (options_handler(argc, argv) != 0)
 	{
-		debug("options_handler() error");
-		return -1;
-	}
-	
-	if (input_flag)
+        debug("options_handler() error");
+        return -1;
+    }
+
+    int epoll_fd = epoll_create1(0);
+    if (epoll_fd == -1)
 	{
-		uint8_t* text = read_text_from_stdin();
-		if (text == NULL)
-		{
-			debug("read_text_from_stdin() error");
-			return -1;
-		}
+        debug("epoll_create1() error");
+        return -1;
+    }
+
+    struct epoll_event event;
+    event.events = EPOLLIN;
+    event.data.fd = STDIN_FILENO;
+
+    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, STDIN_FILENO, &event) == -1)
+	{
+        debug("epoll_ctl() error");
+        return -1;
+    }
+
+    struct epoll_event events[1];
+    int num_events;
+
+    // Wait for input on stdin
+    num_events = epoll_wait(epoll_fd, events, 1, 0);
+    if (num_events == -1)
+	{
+        debug("epoll_wait() error");
+        return -1;
+    } else if (num_events > 0 || input_flag) 
+	{
+		if (num_events > 0)
+		message("Using input whithout input_flag");
 		
-		
-		KeySym *arr = transform_stdin_to_KeySyms(text);
-		if (arr == NULL)
+        uint8_t* text = read_text_from_stdin();
+        if (text == NULL) 
 		{
-			debug("transform_stdin_to_KeySyms() error");
-			return -1;
-		}
-
-		int32_t length = strlen((char *)text);
-
-		if (length <= 0)
+            debug("read_text_from_stdin() error");
+            return -1;
+        }
+        
+        KeySym *arr = transform_stdin_to_KeySyms(text);
+        if (arr == NULL) 
 		{
-			debug("strlen() error");
-			return -1;
-		}
+            debug("transform_stdin_to_KeySyms() error");
+            return -1;
+        }
 
-		for (int i = 0; i < length; i++)
+        int32_t length = strlen((char *)text);
+
+        if (length <= 0) 
 		{
-			
-			if (send_KeySym(arr[i]) != 0)
+            debug("strlen() error");
+            return -1;
+        }
+
+        for (int i = 0; i < length; i++) 
+		{
+            if (send_KeySym(arr[i]) != 0) 
 			{
-				debug("send_KeySym() error");
-				return -1;
-			}
-			
-		}
-		free(text);
-		free(arr);
-	}
-	
-    
+                debug("send_KeySym() error");
+                return -1;
+            }
+        }
 
+        free(text);
+        free(arr);
+    } else 
+	{
+        message("No data within 0 seconds.");
+    }
+
+    close(epoll_fd);
+    
     return 0;
 }
 
@@ -240,7 +271,6 @@ int send_KeySym(KeySym keysym)
 
     message(keysymName);
 
-
     unsigned int event_mask = ShiftMask | LockMask;
 
     struct input_event ev;
@@ -250,7 +280,6 @@ int send_KeySym(KeySym keysym)
 		debug("xkb_keysym_to_utf32() error");
 		return -1;
 	}
-	
 
     // if it is letter and if this letter is uppercase
     if (u_isalpha(codepoint) && xkb_keysym_to_upper(keysym) == keysym)
@@ -275,8 +304,7 @@ int send_KeySym(KeySym keysym)
         send_key(fd, &ev, 1, keycode);
         send_key(fd, &ev, 0, keycode);
     }
-    
-	free(keysymName);
+	
     close(fd);
     XCloseDisplay(display);
 
@@ -342,7 +370,7 @@ int create_event(struct input_event *ev, int type, int code, int value)
 uint8_t* append_char_to_string(uint8_t* str, uint8_t c)
 {
     int length = strlen((char *)str);
-	if (length <= 0)
+	if (length < 0)
 	{
 		debug("strlen() error");
 		return NULL;
@@ -479,15 +507,21 @@ int options_handler(int argc, char * const argv[])
 		{
 			puts("Usage: openswitcher [options]");
 			puts("Options:");
-			puts("  -h, --help                     Display this help message.");
-			puts("  -c, --config <path_to_config>  Specify path to actkbd config. Default is ~/.config/actkbd/actkbd.conf");
-			puts("  -r, --run                      Run key combination event loop.");
-			puts("  -s, --stop                     Stop key combination event loop.");
-			puts("  -v, --version                  Print program version.");
-			puts("  -d, --device <path_to_device>  Specify path to keyboard device. Default is /dev/input/event0");
-			puts("  -i, --input                    Enable input to transform KeySyms to input-event-codes.");
-			puts("  -o, --output                   Enable output to get transformed input-event-codes.");
-			puts("      --verbose                  Enable verbose mode.");
+			puts("  -h, --help                     	Display this help message.");
+			puts("  -c, --config <path_to_config>  	Specify path to actkbd config. Default is ~/.config/actkbd/actkbd.conf");
+			puts("  -r, --run                      	Run key combination event loop.");
+			puts("  -s, --stop                     	Stop key combination event loop.");
+			puts("  -v, --version                  	Print program version.");
+			puts("  -d, --device <path_to_device>  	Specify path to keyboard device. Default is /dev/input/event0");
+			puts("  -i, --input                    	Enable standart input to transform KeySyms to input-event-codes.");
+			puts("  -o, --output                   	Enable standart output to get transformed input-event-codes.");
+			puts("      --verbose                  	Enable verbose mode.");
+			puts("		--debug						Enable debug mode.");
+			puts("");
+			puts("See also:");
+			puts("sudo actkbd --help");
+			puts("man xkb-switch");
+			puts("man openswitcher");
 			
 			break;	
 		}
@@ -619,13 +653,13 @@ int options_handler(int argc, char * const argv[])
     }
 
 	/* Print any remaining command line arguments (not options). */
-	if (optind < argc)
-    {
-		printf ("non-option ARGV-elements: ");
-		while (optind < argc)
-			printf ("%s ", argv[optind++]);
-		putchar ('\n');
-    }
+	// if (optind < argc)
+    // {
+	// 	printf ("non-option ARGV-elements: ");
+	// 	while (optind < argc)
+	// 		printf ("%s ", argv[optind++]);
+	// 	putchar ('\n');
+    // }
 
 	return 0;
 }

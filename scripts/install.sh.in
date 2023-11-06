@@ -12,42 +12,41 @@ fi
 
 # add rule to sudoers
 if [ ! -f "$sudoerspath" ]; then
-	echo "Добавляется правило для корректной работы OpenSwitcher в $sudoerspath:"
+	echo "A rule is added for OpenSwitcher to work correctly in $sudoerspath:"
 	echo "$rule"
 	sudo touch $sudoerspath
 	echo "$rule" | sudo tee $sudoerspath > /dev/null
 
 	if ! sudo grep -q "$rule" "$sudoerspath"; then
-		echo "Правило не добалено, завершение установки"
+		echo "Rule not added, installation terminating."
 		exit 1
 	else
-		echo "Правило добалено"
+		echo "Rule added."
 	fi
 	
 else
 
 	if ! sudo grep -q "$rule" "$sudoerspath"; then
-		echo "Правило не добалено, попытка добавления правила"
+		echo "Rule not added, attempt to add a rule."
 		echo "$rule" | sudo tee $sudoerspath
 
 		if ! sudo grep -q "$rule" "$sudoerspath"; then
-			echo "Правило не добалено, завершение установки"
+			echo "Rule not added, installation terminating."
 			exit 1
 		else
-			echo "Правило добалено"
+			echo "Rule added."
 		fi
 	else
-		echo "Правило добалено"
+		echo "Rule added."
 	fi
 	
 fi
 
 if [[ $OPENSWITCHER_INSTALL_WITH_DPKG != 1 ]]; then
 	# install xkb-switch
-	echo "Устанока xkb-switch"
+	echo "xkb-switch installing."
 	if which cmake >/dev/null; then
-		echo "cmake найден"
-		echo "Установка xkb-switch"
+		echo "cmake found"
 		cd xkb-switch/
 		mkdir -p build 
 		cd build
@@ -58,26 +57,26 @@ if [[ $OPENSWITCHER_INSTALL_WITH_DPKG != 1 ]]; then
 		cd ..
 		cd ..
 	else
-		echo "cmake не найден"
+		echo "cmake not found, installation terminating."
 		exit 1
 	fi
 
 	# install actkbd
-	echo "Устанока actkbd"
+	echo "actkbd installing."
 	if sudo modprobe evdev >/dev/null; then
 		cd actkbd/
-		echo "evdev найден"
+		echo "evdev found"
 		# make
 		sudo make install
 		cd ../
 	else
-		echo "evdev не найден"
+		echo "evdev not found, installation terminating."
 		exit 1
 	fi
 fi
 
 
 
-sudo openswitcher --run
+sudo openswitcher --device "$(input-device-info.sh)" --run
 
-echo "Установка завершена."
+echo "Installation is complete."
